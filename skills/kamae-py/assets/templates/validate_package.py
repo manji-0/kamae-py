@@ -93,7 +93,7 @@ def resolve_repo_path(source: Path, raw_target: str) -> Path | None:
 
 def check_markdown_links(errors: list[str]) -> None:
     for path in sorted(ROOT.rglob("*.md")):
-        if any(part in {".git", ".venv", ".dagayn"} for part in path.parts):
+        if any(part in {".git", ".venv"} for part in path.parts):
             continue
         text = FENCED_CODE_RE.sub("", path.read_text(encoding="utf-8"))
         for raw_target in MD_LINK_RE.findall(text):
@@ -135,7 +135,7 @@ def check_manifest_skill_paths(errors: list[str]) -> None:
 
 def check_python_syntax(errors: list[str]) -> None:
     for path in sorted(ROOT.rglob("*.py")):
-        if any(part in {".git", ".venv", ".dagayn"} for part in path.parts):
+        if any(part in {".git", ".venv"} for part in path.parts):
             continue
         try:
             ast.parse(path.read_text(encoding="utf-8"), filename=str(path))

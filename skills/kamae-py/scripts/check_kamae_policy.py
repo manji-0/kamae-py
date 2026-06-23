@@ -422,7 +422,7 @@ def _iter_source_paths(include_tests: bool, exclude: list[str]) -> list[Path]:
         for path in ROOT.glob(pattern):
             if any(path == ep or ep in path.parents for ep in exclude_paths):
                 continue
-            if any(part in {".git", ".venv", ".dagayn", "__pycache__"} for part in path.parts):
+            if any(part in {".git", ".venv", "__pycache__"} for part in path.parts):
                 continue
             paths.append(path)
     return sorted(paths)
