@@ -51,7 +51,7 @@ Parse external data at the edge with Pydantic v2. Do not use `typing.cast`, broa
 
 ### Error Handling
 
-Read [`references/error-handling.md`](./references/error-handling.md) when modeling use-case failures, mapping errors to HTTP responses, or deciding whether to raise exceptions.
+Read [`references/error-handling.md`](./references/error-handling.md) when modeling use-case failures, mapping errors to HTTP responses, async `Result` flows, or deciding whether to raise exceptions.
 
 Keep expected domain failures explicit and use-case-specific. Reserve exceptions for framework boundaries, unexpected infrastructure failures, and programmer errors.
 
@@ -76,6 +76,20 @@ Redact by default. Make plaintext exposure explicit and adapter-specific.
 Read [`references/persistence-events.md`](./references/persistence-events.md) when designing repositories, transactions, outbox records, idempotent commands, optimistic locking, or event payloads.
 
 Persist aggregate state and emitted events atomically. Add DB constraints for invariants that the database can enforce.
+
+Read [`references/aggregates.md`](./references/aggregates.md) when choosing aggregate roots, consistency boundaries, optimistic vs pessimistic locking, or cross-aggregate workflows.
+
+### Application Wiring
+
+Read [`references/application-wiring.md`](./references/application-wiring.md) when wiring use cases to repository ports, framework entrypoints, fakes, or deciding between explicit arguments and DI containers.
+
+Prefer explicit function parameters and `typing.Protocol` ports. Wire dependencies only at the composition root.
+
+### Migration Strategy
+
+Read [`references/migration-strategy.md`](./references/migration-strategy.md) when introducing Kamae Python into an existing class-based or ORM-centric codebase.
+
+Migrate one workflow at a time. Improve boundary parsing before rewriting every service class.
 
 ### Test Data
 
@@ -128,3 +142,5 @@ Read [`references/taxi-request.py`](./references/taxi-request.py) when a compact
 ## Applying the Stance
 
 Use judgment. If an existing codebase has a documented alternative pattern, follow it unless it weakens boundary validation or makes invalid states easy to represent. When deviating from these principles in new code, leave a short comment explaining the constraint.
+
+For brownfield codebases, start with [`references/migration-strategy.md`](./references/migration-strategy.md) instead of attempting a full rewrite.

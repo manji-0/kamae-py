@@ -77,6 +77,8 @@ async def assign_driver_use_case(
 
 Adapt `Ok` / `Err` names to the result library already used by the project. If the project uses exceptions for application services, keep expected domain failures specific and convert them at the controller boundary.
 
+Read [`error-handling.md`](./error-handling.md) for async `Result` composition and infrastructure error boundaries. Read [`aggregates.md`](./aggregates.md) for one-command transaction scope.
+
 ## Authorize Before Transitioning
 
 Use cases should prove actor, tenant, account, or capability authorization before applying a state transition. The transition function may still accept an authorization value if the permission is part of the domain rule, but do not mutate lifecycle state first and check authorization afterward.

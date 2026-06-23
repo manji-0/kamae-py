@@ -70,3 +70,81 @@ Exceptions are appropriate for:
 - Programmer errors such as an unreachable `assert_never` path.
 
 Exceptions are not appropriate for normal business outcomes such as "request not found", "invalid state", or "driver unavailable" unless the project has explicitly standardized domain-specific exceptions.
+
+## Async Use Cases and Result
+
+Server-side use cases are usually `async def` and return `Result[Success, Error]`. In Python this is `Awaitable[Result[T, E]]`; you do not need a separate `ResultAsync` type.
+
+### Separate Business Failures From Infrastructure Failures
+
+| Outcome | Representation | Examples |
+| --- | --- | --- |
+| Expected business failure | `Err(...)` | not found, invalid state, forbidden |
+| Unexpected infrastructure failure | raised exception | DB down, timeout, bug |
+| Recoverable concurrency conflict | `Err(...)` when mapped, or retryable exception per project policy | version conflict, duplicate command |
+
+Pure transitions stay synchronous. Only use cases and adapters are async.
+
+### Preferred Pattern: Early Return
+
+Prefer readable early returns over long monadic chains.
+
+```python
+async def assign_driver_use_case(
+    resolver: RequestResolver,
+    store: RequestStore,
+    request_id: UUID,
+    driver_id: UUID,
+    now: datetime,
+) -> Result[EnRoute, AssignDriverError]:
+    waiting = await resolver.find_waiting(request_id)
+    if waiting is None:
+        return Err(RequestNotFound(request_id=request_id))
+
+    en_route = assign_driver(waiting, driver_id, now)
+    event = driver_assigned_event(en_route, now)
+
+    try:
+        await store.save_en_route(
+            en_route,
+            (event,),
+            expected_version=waiting.version,
+            idempotency_key=str(request_id),
+        )
+    except VersionConflict:
+        return Err(
+            InvalidState(
+                current_kind=waiting.kind,
+                expected_kind="waiting",
+            )
+        )
+
+    return Ok(en_route)
+```
+
+Infrastructure errors that should trigger framework retries or 5xx responses can remain exceptions:
+
+```python
+    except InfrastructureError:
+        raise
+```
+
+Map driver-specific exceptions to use-case errors at the adapter boundary when callers need a stable `Err` contract.
+
+### Library-Specific Async Result Types
+
+If the project already uses `returns`, `FutureResult` / `IOResult` are acceptable. Do not introduce them only for migration aesthetics.
+
+For `result` (`Ok` / `Err`), keep async composition in the use case with early returns. The examples in this reference use `Ok` / `Err` names.
+
+### Controller Boundary Stays Sync-Friendly
+
+Controllers await the use case, then map the `Result` to HTTP/RPC:
+
+```python
+async def assign_driver_endpoint(...) -> JSONResponse:
+    result = await assign_driver_use_case(...)
+    return assign_driver_response(result)
+```
+
+Do not let framework response types leak into domain or application modules.

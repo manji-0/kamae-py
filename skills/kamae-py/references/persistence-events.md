@@ -1,5 +1,7 @@
 # Persistence and Events
 
+Read [`aggregates.md`](./aggregates.md) for aggregate roots, one-command consistency boundaries, and who owns transactions.
+
 ## Keep Repository Protocols Small
 
 Repository protocols should express use-case needs, not ORM convenience. Split read and write interfaces when it keeps callers from depending on broad CRUD operations.
