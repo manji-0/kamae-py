@@ -94,7 +94,9 @@ Prefer `uv run ruff format`, `uv run ruff check`, `uv run mypy`, and focused `uv
 
 Read [`references/local-validation.md`](./references/local-validation.md) when bootstrapping local `pyproject.toml`, `.gitignore`, mypy/Pydantic plugin settings, Ruff, pytest, or skill-package validation.
 
-Copy or merge templates from [`assets/templates/`](./assets/templates/) because repo-root files are not guaranteed to be installed with the skill.
+Use [`scripts/apply_templates.py`](./scripts/apply_templates.py) to copy templates from [`assets/templates/`](./assets/templates/), or merge the templates manually. Repo-root files are not guaranteed to be installed with the skill.
+
+After bootstrapping, run [`scripts/check_kamae_policy.py`](./scripts/check_kamae_policy.py) as a lightweight sanity check that the project matches the Kamae Python stance. It is advisory by default; use `--strict` to treat warnings as errors.
 
 ### CI Setup
 

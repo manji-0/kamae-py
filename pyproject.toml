@@ -31,7 +31,12 @@ select = ["E", "F", "I", "B", "UP", "RUF"]
 python_version = "3.13"
 strict = true
 plugins = ["pydantic.mypy"]
-files = ["scripts", "skills/kamae-py/references/taxi-request.py", "tests"]
+files = [
+    "scripts",
+    "skills/kamae-py/references/taxi-request.py",
+    "skills/kamae-py/scripts",
+    "tests",
+]
 exclude = ["^skills/kamae-py/assets/templates/"]
 
 [tool.pydantic-mypy]

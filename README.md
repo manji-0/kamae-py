@@ -32,6 +32,8 @@ uv run pytest
 
 Installable templates live under `skills/kamae-py/assets/templates/`. Use those copies when this skill is installed through `gh skill` or `npx skills`, because root-level files such as this repository's `pyproject.toml`, `.github/workflows/ci.yml`, and `scripts/` are not guaranteed to be installed with the skill.
 
+The skill also includes `skills/kamae-py/scripts/apply_templates.py` to copy those templates into a target repository without overwriting existing files by default, and `skills/kamae-py/scripts/check_kamae_policy.py` to sanity-check a target project against the Kamae Python stance.
+
 ## Principles
 
 - Model each domain state as a separate frozen Pydantic v2 model.

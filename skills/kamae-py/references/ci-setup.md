@@ -10,6 +10,25 @@ When this skill is installed, use the bundled templates under [`../assets/templa
 - [`../assets/templates/github-ci-skill-package.yml`](../assets/templates/github-ci-skill-package.yml) -> `.github/workflows/ci.yml` for skill/plugin repositories.
 - [`../assets/templates/validate_package.py`](../assets/templates/validate_package.py) -> `scripts/validate_package.py` when using the skill-package workflow.
 
+You can copy them with the bundled script:
+
+```bash
+python path/to/kamae-py/scripts/apply_templates.py --target . --ci backend
+python path/to/kamae-py/scripts/apply_templates.py --target . --ci skill-package
+```
+
+The script is non-destructive by default; use `--dry-run` to preview and `--force` only when intentionally replacing files.
+
+You can also add the Kamae policy check to CI:
+
+```bash
+python path/to/kamae-py/scripts/check_kamae_policy.py --target . --include-tests
+```
+
+Use `--strict` in CI to fail the build on warnings. For ordinary backend repositories, add it after `uv sync --locked`; for skill/plugin repositories, run it alongside `scripts/validate_package.py`.
+
+If you opted out of installing the policy checker with `apply_templates.py --no-policy-checker`, remove the corresponding step from the generated workflow.
+
 Recommended workflow for skill/plugin repositories:
 
 ```yaml
@@ -47,6 +66,9 @@ jobs:
 
       - name: Validate skill package
         run: uv run python scripts/validate_package.py
+
+      - name: Check Kamae policy
+        run: uv run python scripts/check_kamae_policy.py --include-tests --strict
 
       - name: Check formatting
         run: uv run ruff format --check .
