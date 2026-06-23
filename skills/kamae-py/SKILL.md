@@ -59,11 +59,15 @@ Keep expected domain failures explicit and use-case-specific. Reserve exceptions
 
 Read [`references/logging-metrics.md`](./references/logging-metrics.md) when adding logs, metrics, traces, or observability around domain objects, state transitions, use cases, or domain events.
 
+Read [`references/loggable-identifiers.md`](./references/loggable-identifiers.md) for the allowlist tiers that separate correlation IDs, account IDs, and metric-safe vocabulary.
+
 Default to OpenTelemetry for logs, metrics, and traces. Use OTLP to a collector as the primary export path; Prometheus `/metrics` and other pull-style interfaces are optional. Log meaningful messages, the state of the target domain object, and transition context when the operation changes lifecycle state. Keep metric names stable and labels low-cardinality. Derive metrics from domain events when possible.
 
 ### PII Protection
 
 Read [`references/pii-protection.md`](./references/pii-protection.md) when domain models, DTOs, logs, metrics, errors, traces, or events contain personal data, credentials, tokens, or customer-identifying fields.
+
+Read [`references/loggable-identifiers.md`](./references/loggable-identifiers.md) when deciding which IDs may appear in logs, traces, errors, metrics, or events.
 
 Redact by default. Make plaintext exposure explicit and adapter-specific.
 

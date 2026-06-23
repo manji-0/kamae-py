@@ -31,6 +31,12 @@ Boundary tests should include unknown fields, malformed DTOs, missing required f
 
 Observability tests should verify redacted logs, safe error messages, safe metrics labels, and response DTO serialization when sensitive data is present.
 
+For identifier policy, assert the tier rules from [`loggable-identifiers.md`](./loggable-identifiers.md):
+
+- Tier A/B values never appear in logs, traces, errors, or metric labels.
+- Tier C/D values appear only as structured fields, never inside log message strings.
+- Metric exports use Tier E labels only.
+
 ## Test Persistence and Retry Behavior
 
 When persistence changes, cover DB constraint failures, optimistic-lock conflicts, transaction rollback, duplicate commands, idempotency keys, outbox insertion, and event version compatibility.

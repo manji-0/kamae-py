@@ -55,7 +55,7 @@ Avoid broad getters such as `raw()`, `value`, or `as_str()` on sensitive values 
 
 Never format sensitive values into domain errors, exception messages, logs, tracing spans, metrics labels, task names, queue names, cache keys, or panic-style diagnostics.
 
-Use allowlisted log fields rather than dumping whole Pydantic models.
+Use allowlisted log fields rather than dumping whole Pydantic models. Read [`loggable-identifiers.md`](./loggable-identifiers.md) for the tiered criteria that separate secrets, direct PII, correlation IDs, account IDs, and metric-safe vocabulary.
 
 ```python
 logger.info(

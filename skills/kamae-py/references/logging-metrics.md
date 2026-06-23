@@ -105,14 +105,27 @@ logger.info("in assign_driver_use_case")
 
 ## Log the Target Domain Object's State
 
-Include the fields an operator needs to correlate and diagnose the event: usually identity, aggregate kind, and a small set of safe, non-sensitive attributes. Use structured `extra` fields rather than string interpolation.
+Include the fields an operator needs to correlate and diagnose the event: usually a Tier C correlation ID such as `request_id`, the aggregate `kind`, and a small set of Tier E vocabulary fields. Use structured `extra` fields rather than string interpolation.
+
+Add Tier D account IDs such as `passenger_id` or `driver_id` only when `request_id` alone is not enough for the investigation. Never use Tier D IDs as metric labels or message text.
 
 ```python
 logger.info(
     "driver assigned",
     extra={
         "request_id": str(en_route.request_id),
-        "passenger_id": str(en_route.passenger_id),
+        "state_kind": en_route.kind,
+    },
+)
+```
+
+When support or fraud workflows need actor linkage, add the minimum Tier D set:
+
+```python
+logger.info(
+    "driver assigned",
+    extra={
+        "request_id": str(en_route.request_id),
         "driver_id": str(en_route.driver_id),
         "state_kind": en_route.kind,
     },
@@ -166,9 +179,14 @@ Transition functions should remain pure. They must not call loggers, read clocks
 
 ## Redact PII and Secrets by Default
 
-Apply the same redaction rules as errors and events. Do not interpolate request IDs, customer IDs, or driver IDs into the log message string unless the project explicitly treats them as non-identifying. When those identifiers are safe to record, prefer structured `extra` fields or span attributes instead of formatted message text.
+Apply the same redaction rules as errors and events. Follow the tier rules in [`loggable-identifiers.md`](./loggable-identifiers.md):
 
-Read [`pii-protection.md`](./pii-protection.md) for details on redacting names, contact information, credentials, tokens, and location data.
+- Tier A secrets and Tier B direct PII: never log.
+- Tier C correlation IDs: structured log and trace attributes only.
+- Tier D account/actor IDs: structured attributes when needed; never in message strings or metric labels.
+- Tier E vocabulary: safe for metrics labels and messages.
+
+Read [`pii-protection.md`](./pii-protection.md) for redacting names, contact information, credentials, tokens, and location data.
 
 ## Design Metrics with Stable Names and Low-Cardinality Labels
 
