@@ -97,6 +97,12 @@ Read [`references/quality-gates.md`](./references/quality-gates.md) before finis
 
 Prefer `uv run ruff format`, `uv run ruff check`, `uv run mypy`, and focused `uv run pytest` commands for touched code.
 
+### Development Environment Setup
+
+Read [`references/development-setup.md`](./references/development-setup.md) when setting up a local workspace to work on or with the Kamae Python skill.
+
+Install uv, run `uv python install` and `uv sync`, then run the full local quality gate list before committing. Keep dependency changes in their own commit and regenerate `uv.lock`.
+
 ### Local Validation Setup
 
 Read [`references/local-validation.md`](./references/local-validation.md) when bootstrapping local `pyproject.toml`, `.gitignore`, mypy/Pydantic plugin settings, Ruff, pytest, or skill-package validation.
