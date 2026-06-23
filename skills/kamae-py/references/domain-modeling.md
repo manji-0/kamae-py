@@ -106,9 +106,80 @@ from typing import Annotated
 RequestCode = Annotated[str, StringConstraints(pattern=r"^req-[0-9]{8}$")]
 ```
 
-When stronger nominal separation is required, wrap the value in a frozen model rather than relying only on type aliases.
+`Annotated` aliases and `typing.NewType` are **structurally equivalent** to their base type at runtime. Mypy/pyright catch some mistakes, but nothing stops `passenger_id` from being passed where `driver_id` is expected when both are `UUID`. Prefer stronger patterns when ID mix-ups have business impact.
 
-Domain constructors and Pydantic adapters should be authoritative. Tests, repositories, native adapters, and migrations should not construct invariant-bearing values through raw dicts or `model_construct` unless the purpose is explicitly corrupted-data handling.
+### Prefer Frozen Wrapper Models for Nominal IDs
+
+Wrap each semantic ID in its own frozen Pydantic model (or `@dataclass(frozen=True, slots=True)` for in-process-only IDs). Construction validates format; the wrapper type is not interchangeable with siblings.
+
+```python
+from uuid import UUID
+
+from pydantic import field_validator
+
+
+class PassengerId(DomainModel):
+    value: UUID
+
+
+class DriverId(DomainModel):
+    value: UUID
+
+
+class RequestId(DomainModel):
+    value: UUID
+
+    @field_validator("value")
+    @classmethod
+    def not_nil(cls, value: UUID) -> UUID:
+        if value.int == 0:
+            raise ValueError("request id must not be nil")
+        return value
+```
+
+Use distinct parameter names and types in transitions:
+
+```python
+def assign_driver(waiting: Waiting, driver_id: DriverId, now: datetime) -> EnRoute:
+  ...
+```
+
+### `__init_subclass__` Guard for Non-Instantiable Bases
+
+When several ID types share validation logic, use an abstract base that refuses direct instantiation. Subclasses remain distinct nominal types.
+
+```python
+class SemanticId(DomainModel):
+    value: UUID
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        if cls is SemanticId:
+            raise TypeError("SemanticId cannot be instantiated directly")
+
+
+class TenantId(SemanticId):
+    pass
+
+
+class AccountId(SemanticId):
+    pass
+```
+
+Add per-subclass validators only where rules differ. Do not use a single generic `Id[T]` wrapper unless the codebase already standardizes on that pattern.
+
+### What Not to Rely On
+
+| Approach | Static check | Runtime separation |
+| --- | --- | --- |
+| `UUID` parameter names only | Weak | None |
+| `Annotated[UUID, ...]` / `NewType` | Good | None |
+| Frozen wrapper model per ID | Good | Good (distinct types) |
+| `str` with regex constraint | Shape only | No ID-kind separation |
+
+`NewType` remains acceptable for lightweight documentation when runtime mix-ups are harmless. For money, tenant boundaries, or auth-sensitive IDs, use wrapper models.
+
+Domain constructors and Pydantic adapters should be authoritative. Tests, repositories, native adapters, and migrations should not construct invariant-bearing values through raw dicts or `model_construct` unless the purpose is explicitly corrupted-data handling. Read [`pydantic-performance.md`](./pydantic-performance.md) for when `model_construct` is appropriate in trusted mappers.
 
 ## Define Repository Ports With Protocols
 

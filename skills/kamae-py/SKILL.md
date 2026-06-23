@@ -37,7 +37,9 @@ Read [`references/domain-modeling.md`](./references/domain-modeling.md) when def
 
 Default to frozen Pydantic v2 state variants with a literal `kind` field and an `Annotated[A | B, Field(discriminator="kind")]` union. Use `TypeAdapter` as the runtime parser for union-shaped data.
 
-For lightweight in-process value objects, read the Pydantic vs `dataclasses` / attrs selection table. Keep decorators from hiding I/O, caching, or validation that pure transitions should receive as explicit arguments.
+For lightweight in-process value objects, read the Pydantic vs `dataclasses` / attrs selection table. For nominal ID wrappers and `__init_subclass__` patterns, read the strengthened value-type section in the same file. Keep decorators from hiding I/O, caching, or validation that pure transitions should receive as explicit arguments.
+
+Read [`references/pydantic-performance.md`](./references/pydantic-performance.md) when validation overhead matters on large models, high-frequency endpoints, `model_construct` tradeoffs, or msgspec-style boundary serializers.
 
 ### State Transitions
 
@@ -87,6 +89,8 @@ Read [`references/application-wiring.md`](./references/application-wiring.md) wh
 
 Prefer explicit function parameters and `typing.Protocol` ports. Wire dependencies only at the composition root.
 
+Read [`references/concurrency.md`](./references/concurrency.md) when CPU-bound domain work, the GIL, `ProcessPoolExecutor`, or blocking the asyncio event loop is a concern.
+
 ### Infrastructure Resilience
 
 Read [`references/infrastructure-resilience.md`](./references/infrastructure-resilience.md) when adding retry, timeout, or circuit-breaker behavior around external API, database, or queue adapters.
@@ -98,6 +102,8 @@ Keep tenacity, circuit breakers, and client timeouts in infrastructure modules. 
 Read [`references/migration-strategy.md`](./references/migration-strategy.md) when introducing Kamae Python into an existing class-based or ORM-centric codebase.
 
 Migrate one workflow at a time. Improve boundary parsing before rewriting every service class.
+
+Read [`references/orm-adapters.md`](./references/orm-adapters.md) for concrete SQLAlchemy 2.0 and Django ORM mapper patterns between persistence entities and Pydantic domain models.
 
 ### Test Data
 

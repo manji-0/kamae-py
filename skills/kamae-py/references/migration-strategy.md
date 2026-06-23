@@ -80,6 +80,8 @@ Controllers call the use case. Legacy services delegate to it until removed.
 
 Move SQLAlchemy/Django ORM queries into adapter modules. The use case should see only domain states and explicit errors.
 
+Read [`orm-adapters.md`](./orm-adapters.md) for `mapped_column` entities, row DTOs, `domain_from_row_dto` mappers, and Django `select_for_update` write patterns.
+
 ### Phase 5: Events and Outbox
 
 Add domain events only for workflows that need audit, integration, or async reactions. Start with one event type and one consumer.

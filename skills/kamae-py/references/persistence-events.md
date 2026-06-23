@@ -22,7 +22,7 @@ class RequestStore(Protocol):
     ) -> None: ...
 ```
 
-Adapters can use SQLAlchemy, SQLModel, asyncpg, psycopg, Django ORM, or another tool internally. Do not let that tool's model shape become the domain API by default.
+Adapters can use SQLAlchemy, SQLModel, asyncpg, psycopg, Django ORM, or another tool internally. Do not let that tool's model shape become the domain API by default. Read [`orm-adapters.md`](./orm-adapters.md) for mapper implementations between ORM entities and Pydantic domain states.
 
 ## Persist State and Events Atomically
 
