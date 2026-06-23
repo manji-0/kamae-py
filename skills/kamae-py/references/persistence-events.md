@@ -55,7 +55,7 @@ class DriverAssigned(DomainModel):
     event_name: Literal["driver_assigned"] = "driver_assigned"
     event_version: Literal[1] = 1
     event_id: UUID
-    occurred_at: datetime
+    event_at: datetime
     aggregate_id: UUID
     driver_id: UUID
     passenger_id: UUID

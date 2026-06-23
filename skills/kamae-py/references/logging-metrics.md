@@ -166,7 +166,7 @@ Transition functions should remain pure. They must not call loggers, read clocks
 
 ## Redact PII and Secrets by Default
 
-Apply the same redaction rules as errors and events. Do not put request IDs, customer IDs, or driver IDs in log messages as formatted strings unless the project explicitly treats them as non-identifying. Even when safe, prefer structured `extra` fields.
+Apply the same redaction rules as errors and events. Do not interpolate request IDs, customer IDs, or driver IDs into the log message string unless the project explicitly treats them as non-identifying. When those identifiers are safe to record, prefer structured `extra` fields or span attributes instead of formatted message text.
 
 Read [`pii-protection.md`](./pii-protection.md) for details on redacting names, contact information, credentials, tokens, and location data.
 
@@ -174,12 +174,24 @@ Read [`pii-protection.md`](./pii-protection.md) for details on redacting names, 
 
 Metric names should be stable across deploys. Labels should come from a bounded domain vocabulary, not from user-generated or per-aggregate values.
 
+Obtain a meter once (for example at module scope) and create instruments from it:
+
+```python
+from opentelemetry import metrics
+
+meter = metrics.get_meter(__name__)
+transition_counter = meter.create_counter(
+    "taxi_request_transitions_total",
+    description="Domain state transitions",
+)
+```
+
 Good labels for a taxi domain:
 
 ```python
-metrics.counter(
-    "taxi_request_transitions_total",
-    labels={
+transition_counter.add(
+    1,
+    {
         "transition": "assign_driver",
         "source_kind": "waiting",
         "target_kind": "en_route",
@@ -196,10 +208,8 @@ Because domain events are the authoritative record of business transitions, pref
 
 ```python
 event = driver_assigned_event(en_route, now)
-metrics.counter(
-    "taxi_request_domain_events_total",
-    labels={"event_name": event.event_name},
-)
+domain_event_counter = meter.create_counter("taxi_request_domain_events_total")
+domain_event_counter.add(1, {"event_name": event.event_name})
 ```
 
 ## Log Failures with Explicit Error Context

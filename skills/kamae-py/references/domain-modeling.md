@@ -31,6 +31,31 @@ class EnRoute(DomainModel):
     assigned_at: datetime
 
 
+class InTrip(DomainModel):
+    kind: Literal["in_trip"] = "in_trip"
+    request_id: UUID
+    passenger_id: UUID
+    driver_id: UUID
+    started_at: datetime
+
+
+class Completed(DomainModel):
+    kind: Literal["completed"] = "completed"
+    request_id: UUID
+    passenger_id: UUID
+    driver_id: UUID
+    started_at: datetime
+    completed_at: datetime
+
+
+class Cancelled(DomainModel):
+    kind: Literal["cancelled"] = "cancelled"
+    request_id: UUID
+    passenger_id: UUID
+    cancelled_at: datetime
+    reason: str
+
+
 type TaxiRequest = Annotated[
     Waiting | EnRoute | InTrip | Completed | Cancelled,
     Field(discriminator="kind"),

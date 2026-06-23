@@ -51,6 +51,8 @@ class TransitionOutcome[TState, TEvent](DomainModel):
     events: tuple[TEvent, ...]
 ```
 
+Requires Pydantic 2.11+ for PEP 695 generic model syntax. On earlier 2.x releases, inherit from `typing.Generic` instead.
+
 ## Keep Use Cases Thin
 
 Use cases orchestrate loading, checking preconditions, calling pure transitions, building events, and persisting state plus events. Keep business rules in named functions that are easy to unit test.

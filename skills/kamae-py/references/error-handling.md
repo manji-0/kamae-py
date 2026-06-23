@@ -26,7 +26,13 @@ Use Pydantic error variants when errors cross process, API, queue, or persistenc
 
 ## Prefer Result Values for Domain Flow
 
-If the project already uses a Result library, return `Result[Success, Error]` from use cases with expected business failures. Common options include `returns`, `result`, `dry-python/returns`, or a small local `Ok` / `Err` type.
+If the project already uses a Result library, return `Result[Success, Error]` from use cases with expected business failures. Common options include:
+
+- `returns` from dry-python (`Success` / `Failure`)
+- `result` from rustedpy (`Ok` / `Err`; check maintenance status before adopting)
+- a small local `Ok` / `Err` type
+
+The examples below use `Ok` / `Err`. Adapt constructor and pattern-matching names to the library already in the project.
 
 If the project uses exceptions for application services, keep domain exception classes specific and convert them at the controller boundary. Do not raise broad `Exception`, `ValueError`, or HTTP framework exceptions from domain functions.
 

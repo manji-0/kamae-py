@@ -25,7 +25,7 @@ Kamae Python is a stance for server-side Python 3.12+ code where uv manages the 
 3. Default to mypy with the Pydantic v2 plugin: `plugins = ["pydantic.mypy"]` plus strict plugin flags under `[tool.pydantic-mypy]`.
 4. Use `uv add`, `uv add --dev`, `uv lock`, and `uv run ...`; do not introduce `pip`, `requirements.txt`, Poetry, or Pipenv unless the repository already standardizes on them.
 5. If `pydantic` is absent or version 1.x, ask before migrating existing code. For new code, add Pydantic v2 through uv.
-6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never`, `Self`, and modern standard-library typing.
+6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never` (3.11+), `typing.Self` (3.11+), and modern standard-library typing.
 7. Keep generated code consistent with existing module layout, naming, and dependency choices unless they conflict with the principles below.
 8. Read only the reference files needed for the current task.
 

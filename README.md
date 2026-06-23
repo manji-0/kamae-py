@@ -24,6 +24,7 @@ CI uses the same uv-backed checks:
 
 ```bash
 uv run python scripts/validate_package.py
+uv run python skills/kamae-py/scripts/check_kamae_policy.py --include-tests --strict
 uv run ruff format --check .
 uv run ruff check .
 uv run mypy .
