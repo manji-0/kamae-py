@@ -2,29 +2,30 @@
 name: kamae-py
 description: |
   Robust server-side Python domain modeling with Pydantic v2 discriminated unions,
-  Python 3.13.14, uv-managed projects, frozen state models, pure state transition
+  Python 3.12+, uv-managed projects, frozen state models, pure state transition
   functions, boundary validation, explicit domain errors, PII redaction,
-  persistence/event consistency, tests, documentation contracts, and quality gates.
+  persistence/event consistency, logging and metrics, tests, documentation contracts,
+  and quality gates.
 
   Use when writing or reviewing Python backend domain models, use cases, state
   transitions, repository protocols, API/DB/message boundary parsing, PII handling,
-  outbox/event workflows, tests, or Pydantic v2 unions for business workflows.
-  Skip for frontend code, scripts unrelated to domain logic, infrastructure-only work,
-  or Pydantic v1 projects unless migrating to v2.
+  outbox/event workflows, logging, metrics, tests, or Pydantic v2 unions for business
+  workflows. Skip for frontend code, scripts unrelated to domain logic, infrastructure-only
+  work, or Pydantic v1 projects unless migrating to v2.
 ---
 
 # Kamae Python
 
-Kamae Python is a stance for server-side Python 3.13.14 code where uv manages the project, Pydantic v2 models describe domain states, `kind` discriminates unions, and state changes are pure functions.
+Kamae Python is a stance for server-side Python 3.12+ code where uv manages the project, Pydantic v2 models describe domain states, `kind` discriminates unions, and state changes are pure functions.
 
 ## First Steps
 
 1. Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/mypy/pyright/pytest config, framework, and existing domain patterns.
-2. Default to `.python-version` containing `3.13.14`, `requires-python = ">=3.13.14,<3.14"`, and `pydantic>=2,<3` managed by uv.
+2. Default to `.python-version` containing a 3.12.x or 3.13.x version, `requires-python = ">=3.12,<3.14"`, and `pydantic>=2,<3` managed by uv.
 3. Default to mypy with the Pydantic v2 plugin: `plugins = ["pydantic.mypy"]` plus strict plugin flags under `[tool.pydantic-mypy]`.
 4. Use `uv add`, `uv add --dev`, `uv lock`, and `uv run ...`; do not introduce `pip`, `requirements.txt`, Poetry, or Pipenv unless the repository already standardizes on them.
 5. If `pydantic` is absent or version 1.x, ask before migrating existing code. For new code, add Pydantic v2 through uv.
-6. Use Python 3.13 syntax directly: `A | B`, `match`, `typing.assert_never`, `Self`, and modern standard-library typing.
+6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never`, `Self`, and modern standard-library typing.
 7. Keep generated code consistent with existing module layout, naming, and dependency choices unless they conflict with the principles below.
 8. Read only the reference files needed for the current task.
 
@@ -53,6 +54,12 @@ Parse external data at the edge with Pydantic v2. Do not use `typing.cast`, broa
 Read [`references/error-handling.md`](./references/error-handling.md) when modeling use-case failures, mapping errors to HTTP responses, or deciding whether to raise exceptions.
 
 Keep expected domain failures explicit and use-case-specific. Reserve exceptions for framework boundaries, unexpected infrastructure failures, and programmer errors.
+
+### Logging and Metrics
+
+Read [`references/logging-metrics.md`](./references/logging-metrics.md) when adding logs, metrics, traces, or observability around domain objects, state transitions, use cases, or domain events.
+
+Default to OpenTelemetry for logs, metrics, and traces. Use OTLP to a collector as the primary export path; Prometheus `/metrics` and other pull-style interfaces are optional. Log meaningful messages, the state of the target domain object, and transition context when the operation changes lifecycle state. Keep metric names stable and labels low-cardinality. Derive metrics from domain events when possible.
 
 ### PII Protection
 

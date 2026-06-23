@@ -1,6 +1,6 @@
 # kamae-py
 
-Kamae Python is a Codex skill for robust server-side Python 3.13.14 domain modeling with uv, Pydantic v2 discriminated unions, frozen state models, pure transition functions, boundary validation, and explicit domain errors.
+Kamae Python is a Codex skill for robust server-side Python 3.12+ domain modeling with uv, Pydantic v2 discriminated unions, frozen state models, pure transition functions, boundary validation, and explicit domain errors.
 
 The first skill in this repository is:
 
@@ -12,10 +12,10 @@ Install the skill from this repository with your skill installer of choice, or c
 
 ## Development
 
-This repository assumes uv and Python 3.13.14.
+This repository assumes uv and Python 3.12+ (currently pinned to `.python-version`).
 
 ```bash
-uv python install 3.13.14
+uv python install
 uv sync
 uv run python skills/kamae-py/references/taxi-request.py
 ```

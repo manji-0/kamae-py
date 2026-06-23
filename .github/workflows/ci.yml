@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   checks:
-    name: Python 3.13.14 checks
+    name: Python 3.12+ checks
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

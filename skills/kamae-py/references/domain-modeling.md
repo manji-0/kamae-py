@@ -2,7 +2,7 @@
 
 ## Use Pydantic v2 Variants for Domain States
 
-Assume Python 3.13.14 and Pydantic v2. Define each business state as a separate frozen Pydantic model. Use one project-wide discriminator named `kind`.
+Assume Python 3.12+ and Pydantic v2. Define each business state as a separate frozen Pydantic model. Use one project-wide discriminator named `kind`.
 
 ```python
 from datetime import datetime
@@ -115,11 +115,11 @@ Prefer modules like `request_id.py`, `taxi_request.py`, and `request_repository.
 
 ## Manage the Project With uv
 
-For new repositories, create a uv-managed project with Python 3.13.14 and Pydantic v2.
+For new repositories, create a uv-managed project with Python 3.12+ and Pydantic v2.
 
 ```bash
 uv init --package
-uv python pin 3.13.14
+uv python pin 3.13
 uv add "pydantic>=2,<3"
 uv lock
 ```
@@ -132,7 +132,7 @@ Use the Pydantic v2 mypy plugin in projects that rely on Pydantic domain models.
 
 ```toml
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 

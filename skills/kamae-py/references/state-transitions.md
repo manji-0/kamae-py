@@ -131,7 +131,7 @@ The repository should not invent domain events internally. The use case decides 
 
 ## Check Exhaustiveness
 
-Use `typing.assert_never` when branching over a discriminated union. Python 3.13.14 has it in the standard library. Run pyright or mypy in strict enough mode for this to matter.
+Use `typing.assert_never` when branching over a discriminated union. Python 3.11+ has it in the standard library. Run pyright or mypy in strict enough mode for this to matter.
 
 ```python
 from typing import assert_never

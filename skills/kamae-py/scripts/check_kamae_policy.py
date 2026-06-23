@@ -113,11 +113,11 @@ def check_project_config(result: PolicyResult, config: dict[str, Any]) -> None:
 
     project = config.get("project", {})
     requires_python = project.get("requires-python", "")
-    if not re.fullmatch(r">=3\.13\.14,<3\.14", requires_python):
+    if not re.fullmatch(r">=3\.12,<3\.14", requires_python):
         result.add(
             pyproject_path(),
             0,
-            f"requires-python should be '>=3.13.14,<3.14', got {requires_python!r}",
+            f"requires-python should be '>=3.12,<3.14', got {requires_python!r}",
         )
 
     dependencies = project.get("dependencies", [])
@@ -141,8 +141,8 @@ def check_project_config(result: PolicyResult, config: dict[str, Any]) -> None:
             result.add(pyproject_path(), 0, f"[tool.pydantic-mypy] {flag} must be true")
 
     ruff = config.get("tool", {}).get("ruff", {})
-    if ruff.get("target-version") != "py313":
-        result.add(pyproject_path(), 0, "[tool.ruff] target-version must be 'py313'")
+    if ruff.get("target-version") != "py312":
+        result.add(pyproject_path(), 0, "[tool.ruff] target-version must be 'py312'")
 
 
 def check_forbidden_package_files(result: PolicyResult) -> None:
@@ -158,8 +158,10 @@ def check_python_version_file(result: PolicyResult) -> None:
         result.add(path, 0, ".python-version is missing")
         return
     content = path.read_text(encoding="utf-8").strip()
-    if content != "3.13.14":
-        result.add(path, 0, f".python-version should be '3.13.14', got {content!r}")
+    if not re.fullmatch(r"3\.(12|13)\.\d+", content):
+        result.add(
+            path, 0, f".python-version should be a 3.12.x or 3.13.x version, got {content!r}"
+        )
 
 
 class ModelConfigCollector(ast.NodeVisitor):

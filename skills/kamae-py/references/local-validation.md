@@ -38,10 +38,10 @@ Adjust `project.name`, `description`, and `[tool.mypy].files` before committing.
 
 ## First-Time Setup
 
-Use uv and Python 3.13.14:
+Use uv and Python 3.12+:
 
 ```bash
-uv python pin 3.13.14
+uv python pin 3.13
 uv sync
 uv lock
 ```

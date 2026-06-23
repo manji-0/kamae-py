@@ -2,7 +2,7 @@
 
 ## Default GitHub Actions Workflow
 
-Use CI to make the Kamae Python stance executable: Python 3.13.14, uv, Ruff, mypy with the Pydantic v2 plugin, pytest, and package validation should run before merging domain changes.
+Use CI to make the Kamae Python stance executable: Python 3.12+, uv, Ruff, mypy with the Pydantic v2 plugin, pytest, and package validation should run before merging domain changes.
 
 When this skill is installed, use the bundled templates under [`../assets/templates/`](../assets/templates/):
 
@@ -45,7 +45,7 @@ permissions:
 
 jobs:
   checks:
-    name: Python 3.13.14 checks
+    name: Python 3.12+ checks
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

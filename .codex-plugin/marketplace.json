@@ -1,7 +1,7 @@
 {
   "name": "kamae-py",
   "metadata": {
-    "description": "Kamae Python - robust server-side Python 3.13.14 design harness",
+    "description": "Kamae Python - robust server-side Python 3.12+ design harness",
     "version": "0.1.0"
   },
   "plugins": [

@@ -22,16 +22,16 @@ name = "good"
 version = "0.1.0"
 description = "Good"
 readme = "README.md"
-requires-python = ">=3.13.14,<3.14"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "pydantic>=2,<3",
 ]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py312"
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 
@@ -173,6 +173,34 @@ def test_missing_python_version_file(tmp_path: Path) -> None:
     result = run_checker(tmp_path)
     assert result.returncode == 1
     assert ".python-version is missing" in result.stdout
+
+
+def test_python_version_accepts_3_12(tmp_path: Path) -> None:
+    write_good_project(tmp_path)
+    (tmp_path / ".python-version").write_text("3.12.9", encoding="utf-8")
+    result = run_checker(tmp_path)
+    assert result.returncode == 0, result.stdout
+
+
+def test_python_version_rejects_3_11(tmp_path: Path) -> None:
+    write_good_project(tmp_path)
+    (tmp_path / ".python-version").write_text("3.11.9", encoding="utf-8")
+    result = run_checker(tmp_path)
+    assert result.returncode == 1
+    assert ".python-version should be a 3.12.x or 3.13.x version" in result.stdout
+
+
+def test_requires_python_rejects_old_constraint(tmp_path: Path) -> None:
+    write_good_project(tmp_path)
+    text = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
+    text = text.replace(
+        'requires-python = ">=3.12,<3.14"',
+        'requires-python = ">=3.13.14,<3.14"',
+    )
+    (tmp_path / "pyproject.toml").write_text(text, encoding="utf-8")
+    result = run_checker(tmp_path)
+    assert result.returncode == 1
+    assert "requires-python should be '>=3.12,<3.14'" in result.stdout
 
 
 if __name__ == "__main__":
