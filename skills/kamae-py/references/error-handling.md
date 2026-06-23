@@ -38,6 +38,8 @@ If the project uses exceptions for application services, keep domain exception c
 
 Map repository, SDK, and adapter errors into use-case errors at the infrastructure/application boundary. Do not expose low-level driver exception types as the public contract of a domain use case unless the project has explicitly chosen that convention.
 
+Read [`infrastructure-resilience.md`](./infrastructure-resilience.md) for retry, timeout, and circuit-breaker placement in adapters.
+
 Avoid putting raw PII, secrets, access tokens, SQL snippets with customer data, or external payloads into error variants or exception messages.
 
 ## Convert Errors at the Controller Boundary

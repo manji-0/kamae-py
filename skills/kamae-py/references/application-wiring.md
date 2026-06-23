@@ -128,3 +128,5 @@ class FakeRequestStore:
 ```
 
 Use fakes for application tests. Use real database adapters for transaction, constraint, and locking tests.
+
+Read [`infrastructure-resilience.md`](./infrastructure-resilience.md) when wrapping outbound HTTP, queue, or SDK calls with retry, timeout, or circuit-breaker policies.

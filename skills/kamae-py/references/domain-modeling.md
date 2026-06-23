@@ -168,3 +168,72 @@ warn_required_dynamic_aliases = true
 ```
 
 Keep `init_typed = true` so constructor calls are checked against field types instead of accepting `Any` for Pydantic's default coercion behavior. Keep `init_forbid_extra = true` so unexpected constructor keywords are not hidden behind `**kwargs: Any`. Avoid required dynamic aliases on domain models because they weaken constructor checking.
+
+## Choose Pydantic, dataclasses, or attrs
+
+Pydantic v2 is the default for Kamae Python domain states, boundary DTOs, and error variants that cross process boundaries. Lighter tools are acceptable when validation and JSON schema are not required.
+
+| Need | Prefer |
+| --- | --- |
+| Discriminated union states, boundary parsing, JSON/API contracts | **Pydantic v2** frozen models |
+| Errors or events crossing HTTP, queue, or persistence | **Pydantic v2** with `kind` discriminator |
+| Small in-process value objects with no external serialization | **`@dataclass(frozen=True, slots=True)`** or **attrs frozen** |
+| Internal command/outcome tuples used only inside one module | **dataclass** or **NamedTuple** |
+| Rich validators, converters, or `attrs` ecosystem plugins | **attrs** with `frozen=True` |
+
+```python
+from dataclasses import dataclass
+from decimal import Decimal
+
+
+@dataclass(frozen=True, slots=True)
+class Money:
+    amount: Decimal
+    currency: str
+```
+
+Keep money, IDs, and lifecycle states on Pydantic when they appear in logs, APIs, repositories, or events. Use dataclasses/attrs for hot-path helpers that never leave the domain module.
+
+Do not mix representations for the same concept without an explicit mapper at the module boundary.
+
+## Decorators and Explicit Style
+
+Kamae Python favors explicit fields, constructors, and function arguments over hidden behavior. Decorators can coexist when their effect is local and does not replace domain invariants.
+
+| Decorator | Domain / transition code | Boundary / adapter code |
+| --- | --- | --- |
+| `@property` | Avoid on aggregate states; prefer plain fields | Acceptable for thin adapter views |
+| `@cached_property` | Avoid; hides time-dependent or expensive work inside a "value" | Rare; prefer injecting a precomputed value |
+| `@validate_call` | Avoid on pure transitions; types should already be narrow | Useful on small parse/convert helpers |
+| `@functools.wraps` | Fine for logging or tracing wrappers at infrastructure edges | Fine |
+
+```python
+# Prefer explicit fields on domain states.
+class Waiting(DomainModel):
+    kind: Literal["waiting"] = "waiting"
+    request_id: UUID
+    ...
+
+
+# Avoid computed lifecycle state that performs I/O or caching.
+class Waiting(DomainModel):
+    @cached_property
+    def display_label(self) -> str: ...  # hides work; hard to test in isolation
+```
+
+Pure transition functions should take every input as a parameter. If a decorator changes observable behavior (validation, caching, I/O), keep it outside the transition and inside an adapter or use case where dependencies are visible in the signature.
+
+`@property` is acceptable on small immutable value objects when it is a pure derivation from existing fields and does not perform I/O:
+
+```python
+@dataclass(frozen=True, slots=True)
+class DateRange:
+    start: date
+    end: date
+
+    @property
+    def days(self) -> int:
+        return (self.end - self.start).days
+```
+
+When Pydantic field validators or `model_validator` replace decorator-heavy classes, prefer validators on frozen models so construction stays the single validation entry point.

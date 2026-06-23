@@ -37,6 +37,8 @@ Read [`references/domain-modeling.md`](./references/domain-modeling.md) when def
 
 Default to frozen Pydantic v2 state variants with a literal `kind` field and an `Annotated[A | B, Field(discriminator="kind")]` union. Use `TypeAdapter` as the runtime parser for union-shaped data.
 
+For lightweight in-process value objects, read the Pydantic vs `dataclasses` / attrs selection table. Keep decorators from hiding I/O, caching, or validation that pure transitions should receive as explicit arguments.
+
 ### State Transitions
 
 Read [`references/state-transitions.md`](./references/state-transitions.md) when implementing transitions, use cases, domain events, or exhaustive branching.
@@ -85,6 +87,12 @@ Read [`references/application-wiring.md`](./references/application-wiring.md) wh
 
 Prefer explicit function parameters and `typing.Protocol` ports. Wire dependencies only at the composition root.
 
+### Infrastructure Resilience
+
+Read [`references/infrastructure-resilience.md`](./references/infrastructure-resilience.md) when adding retry, timeout, or circuit-breaker behavior around external API, database, or queue adapters.
+
+Keep tenacity, circuit breakers, and client timeouts in infrastructure modules. Pair retries with idempotency keys from [`references/persistence-events.md`](./references/persistence-events.md).
+
 ### Migration Strategy
 
 Read [`references/migration-strategy.md`](./references/migration-strategy.md) when introducing Kamae Python into an existing class-based or ORM-centric codebase.
@@ -93,7 +101,7 @@ Migrate one workflow at a time. Improve boundary parsing before rewriting every 
 
 ### Test Data
 
-Read [`references/test-data.md`](./references/test-data.md) when adding fixtures, factories, property tests, transition tests, boundary tests, or persistence retry tests.
+Read [`references/test-data.md`](./references/test-data.md) when adding fixtures, factories, property-based tests (Hypothesis), transition tests, boundary tests, or persistence retry tests.
 
 Tests should exercise the same constructors, Pydantic adapters, and transition functions as production code.
 

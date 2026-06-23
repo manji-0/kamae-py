@@ -45,6 +45,86 @@ Use fake repositories for pure use-case tests and adapter/integration tests for 
 
 ## Use Property-Based Tests for Stable Invariants
 
-Use Hypothesis or the project's property-test library when an invariant should hold across many inputs: value-object constructors, parser/formatter round trips, state-machine transition laws, money arithmetic, unit conversions, and timestamp boundary rules.
+Use [Hypothesis](https://hypothesis.readthedocs.io/) or the project's property-test library when an invariant should hold across many inputs. PBT fits Kamae Python well because transitions are pure functions and invariants are explicit.
+
+```bash
+uv add --dev hypothesis
+```
+
+Good PBT targets:
+
+- Value-object constructors and validation rules.
+- Parser/formatter round trips through `TypeAdapter`.
+- State-machine transition laws (see below).
+- Money arithmetic, unit conversions, and timestamp boundary rules.
+- Redaction helpers and safe serialization.
 
 Generated values should still flow through public constructors or Pydantic adapters. A generator that fills private/raw fields can accidentally test states production code cannot construct.
+
+### State-Transition Laws
+
+For each transition, test properties that should hold for every allowed input:
+
+| Law | Example |
+| --- | --- |
+| Identity preserved | `result.request_id == source.request_id` |
+| Discriminator changes correctly | `assign_driver(waiting, ...).kind == "en_route"` |
+| Rejected paths stay unreachable | invalid source states never reach the transition function |
+| Event count/shape | `len(outcome.events) == 1` and event aggregate ID matches state |
+
+```python
+from datetime import datetime, timezone
+from uuid import UUID
+
+from hypothesis import given, strategies as st
+
+
+@given(
+    request_id=st.uuids(),
+    passenger_id=st.uuids(),
+    driver_id=st.uuids(),
+    created_at=st.datetimes(timezones=st.just(timezone.utc)),
+    assigned_at=st.datetimes(timezones=st.just(timezone.utc)),
+)
+def test_assign_driver_preserves_identity(
+    request_id: UUID,
+    passenger_id: UUID,
+    driver_id: UUID,
+    created_at: datetime,
+    assigned_at: datetime,
+) -> None:
+    waiting = Waiting(
+        request_id=request_id,
+        passenger_id=passenger_id,
+        created_at=created_at,
+    )
+    en_route = assign_driver(waiting, driver_id, assigned_at)
+
+    assert en_route.request_id == request_id
+    assert en_route.passenger_id == passenger_id
+    assert en_route.driver_id == driver_id
+    assert en_route.kind == "en_route"
+```
+
+Compose multi-step laws with `st.builds` or chained transitions when the workflow has a small state space. Keep each property focused on one invariant so failures are easy to shrink.
+
+### Round-Trip and Adapter Properties
+
+```python
+from hypothesis import given, strategies as st
+
+
+@given(st.builds(Waiting, ...))
+def test_taxi_request_round_trip(state: Waiting) -> None:
+    payload = state.model_dump(mode="json")
+    parsed = TaxiRequestAdapter.validate_python(payload)
+    assert parsed == state
+```
+
+Use `hypothesis.strategies.from_type` only when the type's constructor is the same path production uses. Prefer explicit `st.builds` for Pydantic models with constrained fields.
+
+### Shrinking and Reproducibility
+
+Hypothesis shrinks failing examples automatically. When a property fails in CI, copy the `@reproduce_failure` blob or run with `hypothesis seed=...` from the failure output.
+
+Register custom strategies beside fixtures so example-based and property-based tests share the same construction helpers.
