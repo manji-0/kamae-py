@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kamae Python"
+  short_description: "Server-side Python domain modeling"
+  default_prompt: "Use $kamae-py to design a server-side Python domain model with Pydantic v2 discriminated unions and pure state transitions."

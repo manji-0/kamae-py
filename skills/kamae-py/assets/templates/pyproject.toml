@@ -1,0 +1,35 @@
+[project]
+name = "your-project"
+version = "0.1.0"
+description = "Server-side Python domain project"
+readme = "README.md"
+requires-python = ">=3.13.14,<3.14"
+dependencies = [
+    "pydantic>=2,<3",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.0",
+    "pytest>=9.0.0",
+    "ruff>=0.14.0",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["src", "tests"]
+exclude = ["^skills/.*/assets/templates/"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
