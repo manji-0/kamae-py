@@ -11,8 +11,10 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS_ROOT = ROOT / "skills"
-PLUGIN_MANIFEST = ROOT / ".codex-plugin" / "plugin.json"
-MARKETPLACE_MANIFEST = ROOT / ".codex-plugin" / "marketplace.json"
+CLAUDE_PLUGIN_MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
+CLAUDE_MARKETPLACE_MANIFEST = ROOT / ".claude-plugin" / "marketplace.json"
+CODEX_PLUGIN_MANIFEST = ROOT / ".codex-plugin" / "plugin.json"
+CODEX_MARKETPLACE_MANIFEST = ROOT / ".codex-plugin" / "marketplace.json"
 
 FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
 MD_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
@@ -109,28 +111,36 @@ def check_markdown_links(errors: list[str]) -> None:
                 fail(errors, f"{rel(path)}: missing relative Markdown target: {raw_target}")
 
 
-def check_manifest_skill_paths(errors: list[str]) -> None:
-    plugin = load_json(PLUGIN_MANIFEST, errors)
-    if isinstance(plugin, dict):
-        for entry in as_list(plugin.get("skills")):
+def check_plugin_manifest_skills(manifest: Path, errors: list[str]) -> None:
+    plugin = load_json(manifest, errors)
+    if not isinstance(plugin, dict):
+        return
+    for entry in as_list(plugin.get("skills")):
+        if isinstance(entry, str):
+            skill_path = (ROOT / entry).resolve()
+            if not has_skill_file(skill_path):
+                fail(errors, f"{rel(manifest)}: skill path has no SKILL.md: {entry}")
+
+
+def check_marketplace_manifest_skills(manifest: Path, errors: list[str]) -> None:
+    marketplace = load_json(manifest, errors)
+    if not isinstance(marketplace, dict):
+        return
+    for plugin_entry in as_list(marketplace.get("plugins")):
+        if not isinstance(plugin_entry, dict):
+            continue
+        for entry in as_list(plugin_entry.get("skills")):
             if isinstance(entry, str):
                 skill_path = (ROOT / entry).resolve()
                 if not has_skill_file(skill_path):
-                    fail(errors, f"{rel(PLUGIN_MANIFEST)}: skill path has no SKILL.md: {entry}")
+                    fail(errors, f"{rel(manifest)}: skill path has no SKILL.md: {entry}")
 
-    marketplace = load_json(MARKETPLACE_MANIFEST, errors)
-    if isinstance(marketplace, dict):
-        for plugin_entry in as_list(marketplace.get("plugins")):
-            if not isinstance(plugin_entry, dict):
-                continue
-            for entry in as_list(plugin_entry.get("skills")):
-                if isinstance(entry, str):
-                    skill_path = (ROOT / entry).resolve()
-                    if not has_skill_file(skill_path):
-                        fail(
-                            errors,
-                            f"{rel(MARKETPLACE_MANIFEST)}: skill path has no SKILL.md: {entry}",
-                        )
+
+def check_manifest_skill_paths(errors: list[str]) -> None:
+    check_plugin_manifest_skills(CLAUDE_PLUGIN_MANIFEST, errors)
+    check_plugin_manifest_skills(CODEX_PLUGIN_MANIFEST, errors)
+    check_marketplace_manifest_skills(CLAUDE_MARKETPLACE_MANIFEST, errors)
+    check_marketplace_manifest_skills(CODEX_MARKETPLACE_MANIFEST, errors)
 
 
 def check_python_syntax(errors: list[str]) -> None:

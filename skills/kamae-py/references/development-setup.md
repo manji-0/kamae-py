@@ -54,6 +54,8 @@ The skill lives under `skills/kamae-py/`:
 
 When you add a new reference document, link to it from `SKILL.md` so the skill dispatcher surfaces it. Prefer relative links so `scripts/validate_package.py` can check them.
 
+Add project rules under `.claude/rules/` or `.codex/rules/` for dependency preferences and review toggles (see [`rules/README.md`](../../../rules/README.md)). Point agents at `pyproject.toml` first so dependency detection and topic files load correctly.
+
 When you change `check_kamae_policy.py`, add or update tests in `tests/test_check_kamae_policy.py`.
 
 ## Apply Templates for Testing

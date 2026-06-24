@@ -2,8 +2,15 @@
   "name": "kamae-py",
   "description": "Kamae Python - server-side Python 3.12+ domain modeling with uv, Pydantic v2 discriminated unions, and pure state transitions",
   "version": "0.1.0",
+  "author": {
+    "name": "kamae-py contributors"
+  },
   "repository": "https://github.com/manji-0/kamae-py",
   "license": "MIT",
+  "skills": [
+    "./skills/kamae-py",
+    "./skills/kamae-py-review"
+  ],
   "keywords": [
     "python",
     "uv",

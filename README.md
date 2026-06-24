@@ -11,6 +11,20 @@ Skills in this repository:
 
 Install the skill from this repository with your skill installer of choice, or copy `skills/kamae-py` into a Codex skills directory.
 
+For Claude Code, add this repository as a marketplace and install the plugin:
+
+```bash
+/plugin marketplace add manji-0/kamae-py
+/plugin install kamae-py@kamae-py
+```
+
+## Packaging
+
+The package includes both Claude and Codex manifests:
+
+- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` describe the Claude plugin package.
+- `.codex-plugin/plugin.json` and `.codex-plugin/marketplace.json` describe the Codex plugin package.
+
 ## Development
 
 This repository assumes uv and Python 3.12+ (currently pinned to `.python-version`).
@@ -49,3 +63,15 @@ The skill also includes `skills/kamae-py/scripts/apply_templates.py` to copy tho
 - Keep uv-run Ruff, mypy with the Pydantic v2 plugin, and pytest gates clean for touched domain code.
 
 See `skills/kamae-py/SKILL.md` for the dispatching guide and `skills/kamae-py/references/` for detailed references.
+
+## Customization
+
+Rules live under `.claude/rules/`, `.codex/rules/`, user-level rule directories, or this repo's `rules/defaults/`. See [`rules/README.md`](./rules/README.md).
+
+## Repository Layout
+
+```text
+skills/kamae-py/          Implementation guidance
+skills/kamae-py-review/   Review procedure and checklist
+rules/                    Project/user override format
+```
