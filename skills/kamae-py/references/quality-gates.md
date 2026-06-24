@@ -59,3 +59,96 @@ If a suppression is necessary, keep it narrow and explain why the runtime valida
 Run focused pytest tests for domain constructors, transitions, DTO conversion, PII redaction, native wrappers, repository transactions, outbox behavior, and retry/idempotency paths.
 
 Generated, vendored, or externally maintained code can be exempt from the full lint bar, but safe wrappers around it still follow boundary validation, PII, and native-boundary guidance.
+
+## Pre-commit Integration
+
+Run the same checks locally before commit. Example [pre-commit](https://pre-commit.com/) config fragment:
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: kamae-policy
+        name: kamae policy
+        entry: uv run python skills/kamae-py/scripts/check_kamae_policy.py --include-tests --strict
+        language: system
+        pass_filenames: false
+```
+
+Install and run:
+
+```bash
+uv add --dev pre-commit
+uv run pre-commit install
+uv run pre-commit run --all-files
+```
+
+Keep hooks fast: run full `pytest` in CI, not necessarily on every commit unless the suite is small. Use `files:` patterns to scope expensive hooks.
+
+## Makefile and Taskfile Patterns
+
+Centralize `uv run` commands so local and CI share entry points.
+
+**Makefile:**
+
+```makefile
+.PHONY: format lint typecheck test check
+
+format:
+	uv run ruff format .
+
+lint:
+	uv run ruff check .
+
+typecheck:
+	uv run mypy .
+
+test:
+	uv run pytest
+
+check: format lint typecheck test
+```
+
+**Taskfile.yml** ([Task](https://taskfile.dev/)):
+
+```yaml
+version: "3"
+
+tasks:
+  default:
+    deps: [format, lint, typecheck, test]
+
+  format:
+    cmds: [uv run ruff format .]
+
+  lint:
+    cmds: [uv run ruff check .]
+
+  typecheck:
+    cmds: [uv run mypy .]
+
+  test:
+    cmds: [uv run pytest]
+
+  check:
+    deps: [format, lint, typecheck, test]
+```
+
+Point CI workflows at `make check` or `task check` so drift between local and pipeline is visible in one place. Read [`ci-setup.md`](./ci-setup.md) for GitHub Actions wiring.

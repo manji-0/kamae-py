@@ -26,7 +26,33 @@ def request_from_row(row: Mapping[str, object]) -> TaxiRequest:
     return TaxiRequestAdapter.validate_python(row)
 ```
 
-## When `model_construct` Is Acceptable
+## validate_python vs validate_json
+
+| Method | Input | Typical path |
+| --- | --- | --- |
+| `validate_python` | Already-decoded `dict` / `list` | `response.json()` → validate |
+| `validate_json` | `bytes` / `str` JSON | Raw HTTP body → validate |
+
+On medium and large models, `validate_json` is often **1.2–2× faster** than `json.loads` + `validate_python` because parsing and validation share Pydantic's Rust core. The gap is largest when:
+
+- Payloads are JSON strings or bytes at the edge.
+- Models have many scalar fields and few custom validators.
+
+When input is already a `dict` from an ORM or in-process API, `validate_python` is the right call—do not round-trip through JSON for speed.
+
+```python
+# HTTP edge
+async def parse_body(raw: bytes) -> CreateRequestInput:
+    return CreateRequestInputAdapter.validate_json(raw)
+
+# ORM row already dict-like
+def from_row(row: Mapping[str, object]) -> RequestRow:
+    return RequestRowAdapter.validate_python(row)
+```
+
+Benchmark on your schemas; micro-benchmarks vary by field count, unions, and validators.
+
+## When model_construct Is Acceptable
 
 `model_construct` skips validation. Use it only on **trusted** paths where invariants were already enforced—typically inside a tested mapper after a prior Pydantic parse or a database driver that returned typed values.
 
@@ -44,6 +70,94 @@ def waiting_from_row(dto: RequestRow) -> Waiting:
 Do not use `model_construct` to skip validation on external HTTP, queue, or file input. Read [`boundary-defense.md`](./boundary-defense.md) and [`unsafe-boundaries.md`](./unsafe-boundaries.md) for the full policy.
 
 Document every `model_construct` mapper with a short comment stating why the input is trusted and which invariant checks happen upstream.
+
+### When to consider model_construct (benchmark heuristics)
+
+| Signal | Rough threshold | Action |
+| --- | --- | --- |
+| Profiling shows `validate_python` > 10–15% of request CPU | After narrowing DTOs | Add `model_construct` in **tested** row mappers only |
+| List endpoint hydrates > 500 rows/request | Same schema validated twice (row + domain) | Row DTO + `model_construct` to domain |
+| Single-field patch | Full union re-validation | Avoid—use targeted transition, not re-parse |
+| External input | Any | **Never** `model_construct` |
+
+If validation is below ~5% of wall time in a realistic load test, prefer clarity over `model_construct`.
+
+## msgspec Boundary → Pydantic Domain Pipeline
+
+[msgspec](https://jcristharif.com/msgspec/) and similar libraries can outperform Pydantic on JSON encode/decode for simple, stable schemas. Kamae Python still prefers Pydantic for domain states and discriminated unions because of validator expressiveness, ecosystem integration, and mypy plugin support.
+
+Acceptable pattern: **msgspec at the wire edge, Pydantic for domain.**
+
+```python
+import msgspec
+from uuid import UUID
+
+
+class CreateRequestWire(msgspec.Struct, forbid_unknown_fields=True):
+    passenger_id: UUID
+    pickup_lat: float
+    pickup_lng: float
+
+
+CreateRequestWireDecoder = msgspec.json.Decoder(CreateRequestWire)
+
+
+def parse_create_request(body: bytes) -> CreateRequestInput:
+    wire = CreateRequestWireDecoder.decode(body)
+    # Map into Pydantic DTO or domain command for validators Pydantic owns.
+    return CreateRequestInput(
+        passenger_id=wire.passenger_id,
+        pickup_lat=wire.pickup_lat,
+        pickup_lng=wire.pickup_lng,
+    )
+```
+
+Pipeline:
+
+```text
+HTTP bytes → msgspec.Struct (wire) → Pydantic DTO (strict) → domain command/state → use case
+```
+
+Rules:
+
+- msgspec struct is a **transport shape**, not a second domain model.
+- Run cross-field and business rules on Pydantic or domain constructors after the handoff.
+- Do not maintain divergent validation rules between msgspec and Pydantic without tests on both paths.
+
+Compare options with benchmarks on **your** payload sizes and endpoint mix before switching. Micro-benchmarks on toy models rarely predict API gateway throughput.
+
+## TypeAdapter Cache Strategy for Batch Processing
+
+| Pattern | Implementation | Use when |
+| --- | --- | --- |
+| Module-level adapter | `FooAdapter = TypeAdapter(Foo)` | Default for all repeated parses |
+| Batch validate | `[FooAdapter.validate_python(row) for row in rows]` | Moderate lists; simplest |
+| `validate_json` on NDJSON | One adapter; loop lines | Ingest workers |
+| Pre-sized list + loop | Avoid per-row adapter creation | Thousands of rows per job |
+| `functools.cache` on factory | Only if schema varies by key | Dynamic schemas (rare) |
+
+```python
+from functools import cache
+
+TaxiRequestAdapter = TypeAdapter(TaxiRequest)
+
+
+def hydrate_requests(rows: Sequence[Mapping[str, object]]) -> list[TaxiRequest]:
+    # Reuse module adapter; no per-row TypeAdapter().
+    return [TaxiRequestAdapter.validate_python(row) for row in rows]
+
+
+@cache
+def adapter_for_schema_version(version: int) -> TypeAdapter[TaxiRequest]:
+    # Rare: versioned wire format in long-running worker
+    ...
+```
+
+For very large batches where profiling proves validation dominates:
+
+1. Validate into a **narrow row DTO** (cheap).
+2. `model_construct` into domain only for rows that pass filters.
+3. Consider offloading CPU-bound batches to `asyncio.to_thread` or a worker pool—see [`concurrency.md`](./concurrency.md).
 
 ## Reduce Work Without Bypassing Invariants
 
@@ -63,20 +177,6 @@ Document every `model_construct` mapper with a short comment stating why the inp
 | `functools.lru_cache` on pure parse helpers | Small, immutable config or reference data parsed once per process |
 
 Do not cache raw dicts from external systems and treat them as domain objects without re-validation on cache miss. Invalidation must be tied to aggregate version or TTL policy.
-
-## msgspec and Other Fast Serializers
-
-[msgspec](https://jcristharif.com/msgspec/) and similar libraries can outperform Pydantic on JSON encode/decode for simple, stable schemas. Kamae Python still prefers Pydantic for domain states and discriminated unions because of validator expressiveness, ecosystem integration, and mypy plugin support.
-
-Acceptable pattern: **msgspec (or `orjson`) at the wire edge, Pydantic for domain.**
-
-```text
-HTTP bytes → msgspec.Struct (wire DTO) → map to Pydantic command/state → use case
-```
-
-Do not maintain two competing domain model systems. The msgspec struct is a transport shape; the Pydantic model remains the source of truth for invariants and transitions.
-
-Compare options with benchmarks on **your** payload sizes and endpoint mix before switching. Micro-benchmarks on toy models rarely predict API gateway throughput.
 
 ## Profiling Checklist
 

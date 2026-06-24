@@ -43,24 +43,82 @@ Adjust `project.name`, `description`, and `[tool.mypy].files` before committing.
 
 ## First-Time Setup
 
-Use uv and Python 3.12+:
+Use uv and Python 3.12+. **Docker is optional**—the default path is a local Python toolchain plus optional containerized dependencies only when you need them (for example Postgres integration tests).
+
+### 1. Install uv and pin Python
 
 ```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh   # or brew install uv
+cd your-project
 uv python pin 3.13
-uv sync
-uv lock
 ```
 
-If the project does not yet have a `pyproject.toml`, copy the bundled template first and then run:
+### 2. Bootstrap from templates (new projects)
+
+```bash
+python path/to/kamae-py/scripts/apply_templates.py --target . --ci backend --dry-run
+python path/to/kamae-py/scripts/apply_templates.py --target . --ci backend
+```
+
+### 3. Sync dependencies
 
 ```bash
 uv sync
+uv lock
 uv run python --version
 uv run python -c "import pydantic; print(pydantic.__version__)"
 ```
+
+If the project does not yet have a `pyproject.toml`, copy the bundled template first, then run `uv sync`.
+
+### 4. Local services without Docker (optional)
+
+When integration tests need Postgres or Redis:
+
+| Service | macOS (Homebrew) | Linux (apt) |
+| --- | --- | --- |
+| PostgreSQL | `brew install postgresql@16 && brew services start postgresql@16` | `sudo apt install postgresql` |
+| Redis | `brew install redis && brew services start redis` | `sudo apt install redis-server` |
+
+Create a dev database and point settings at it:
+
+```bash
+createdb myapp_dev
+export DB_HOST=localhost DB_PORT=5432 DB_NAME=myapp_dev DB_USER=$USER DB_PASSWORD=
+```
+
+Use `.env` with pydantic-settings (see [`boundary-defense.md`](./boundary-defense.md#environment-and-cli-boundaries)). Add `.env` to `.gitignore`.
+
+### 5. Verify the toolchain
+
+```bash
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy .
+uv run pytest
+python path/to/kamae-py/scripts/check_kamae_policy.py --target . --include-tests
+```
+
+### 6. Editor integration
+
+- Enable Ruff as the format/lint provider in the IDE.
+- Set the interpreter to `.venv/bin/python` after `uv sync`.
+- Run `uv run mypy` from the project root so the Pydantic mypy plugin resolves.
 
 ## Local Check Loop
 
 After bootstrap, run the baseline commands in [`quality-gates.md`](./quality-gates.md). For skill/plugin repositories, also run `uv run python scripts/validate_package.py`.
 
+Install pre-commit hooks from [`quality-gates.md`](./quality-gates.md#pre-commit-integration) when the team wants automatic formatting before commit.
+
 For mypy and Pydantic plugin settings, merge [`../assets/templates/pyproject.toml`](../assets/templates/pyproject.toml) or follow [`domain-modeling.md`](./domain-modeling.md#configure-mypy-with-the-pydantic-plugin).
+
+## When to Add Docker
+
+Use Docker or Compose when:
+
+- Production parity requires exact image versions.
+- Onboarding must not install Postgres/Redis locally.
+- CI uses the same `docker compose up` for integration tests.
+
+Keep domain unit tests runnable with `uv run pytest` and no containers. Put integration tests behind a marker (`pytest -m integration`) or optional compose profile.
