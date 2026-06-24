@@ -166,14 +166,14 @@ def scan_file(path: Path, result: ProbeResult) -> None:
     for rule_name, pattern, checklists in PATTERN_RULES:
         if rule_name == "doc-contract-gap":
             for match in pattern.finditer(text):
-                line = text[: match.start()].count("\n") + 1
+                lineno = text[: match.start()].count("\n") + 1
                 snippet = match.group(0).splitlines()[0]
-                result.add(path, line, rule_name, snippet, checklists)
+                result.add(path, lineno, rule_name, snippet, checklists)
             continue
 
-        for index, line in enumerate(lines, start=1):
-            if pattern.search(line):
-                result.add(path, index, rule_name, line.strip(), checklists)
+        for index, text_line in enumerate(lines, start=1):
+            if pattern.search(text_line):
+                result.add(path, index, rule_name, text_line.strip(), checklists)
 
     if "class " in text and "Protocol" in text:
         result.add(
