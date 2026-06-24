@@ -20,10 +20,11 @@ For Claude Code, add this repository as a marketplace and install the plugin:
 
 ## Packaging
 
-The package includes both Claude and Codex manifests:
+The package includes Claude, Codex, and Agents Marketplace manifests:
 
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` describe the Claude plugin package.
-- `.codex-plugin/plugin.json` and `.codex-plugin/marketplace.json` describe the Codex plugin package.
+- `.codex-plugin/plugin.json` and `.agents/plugins/marketplace.json` describe the Codex plugin package and Agents Marketplace listing.
+- `.codex-plugin/marketplace.json` lists skills for Codex marketplace installs.
 
 Rules-based customization is documented in [`rules/README.md`](./rules/README.md). Override plugin defaults from `.claude/rules/` or `.codex/rules/` in your project, or from user-level rule directories.
 

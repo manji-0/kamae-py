@@ -15,6 +15,15 @@ CLAUDE_PLUGIN_MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
 CLAUDE_MARKETPLACE_MANIFEST = ROOT / ".claude-plugin" / "marketplace.json"
 CODEX_PLUGIN_MANIFEST = ROOT / ".codex-plugin" / "plugin.json"
 CODEX_MARKETPLACE_MANIFEST = ROOT / ".codex-plugin" / "marketplace.json"
+AGENTS_MARKETPLACE_MANIFEST = ROOT / ".agents" / "plugins" / "marketplace.json"
+
+JSON_MANIFESTS = [
+    CLAUDE_PLUGIN_MANIFEST,
+    CLAUDE_MARKETPLACE_MANIFEST,
+    CODEX_PLUGIN_MANIFEST,
+    CODEX_MARKETPLACE_MANIFEST,
+    AGENTS_MARKETPLACE_MANIFEST,
+]
 
 FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
 MD_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
@@ -118,6 +127,32 @@ def check_markdown_links(errors: list[str]) -> None:
                 fail(errors, f"{rel(path)}: missing relative Markdown target: {raw_target}")
 
 
+def check_json_manifests(errors: list[str]) -> None:
+    for manifest in JSON_MANIFESTS:
+        load_json(manifest, errors)
+
+
+def check_codex_interface(errors: list[str]) -> None:
+    plugin = load_json(CODEX_PLUGIN_MANIFEST, errors)
+    if not isinstance(plugin, dict):
+        return
+    interface = plugin.get("interface")
+    if not isinstance(interface, dict):
+        fail(errors, f"{rel(CODEX_PLUGIN_MANIFEST)}: missing top-level interface object")
+        return
+    for key in [
+        "displayName",
+        "shortDescription",
+        "longDescription",
+        "developerName",
+        "category",
+        "capabilities",
+        "defaultPrompt",
+    ]:
+        if not interface.get(key):
+            fail(errors, f"{rel(CODEX_PLUGIN_MANIFEST)}: missing interface.{key}")
+
+
 def check_plugin_manifest_skills(manifest: Path, errors: list[str]) -> None:
     plugin = load_json(manifest, errors)
     if not isinstance(plugin, dict):
@@ -196,7 +231,10 @@ def check_dependency_detection_references(errors: list[str]) -> None:
 
 def main() -> int:
     errors: list[str] = []
-    check_manifest_skill_paths(errors)
+    check_json_manifests(errors)
+    if not errors:
+        check_codex_interface(errors)
+        check_manifest_skill_paths(errors)
     check_skill_frontmatter(errors)
     check_rule_frontmatter(errors)
     check_markdown_links(errors)

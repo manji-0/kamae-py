@@ -1,0 +1,20 @@
+{
+  "name": "kamae-py",
+  "interface": {
+    "displayName": "Kamae Python"
+  },
+  "plugins": [
+    {
+      "name": "kamae-py",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
