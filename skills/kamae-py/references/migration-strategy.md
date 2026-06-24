@@ -1,5 +1,9 @@
 # Migration Strategy
 
+> **When to read:** Introducing Kamae Python into an existing class-based or ORM-centric codebase.
+> **Related:** [`boundary-defense.md`](./boundary-defense.md), [`orm-adapters.md`](./orm-adapters.md), [`aggregates.md`](./aggregates.md).
+
+
 Kamae Python describes an end state. Existing class-based services, blob models, and ORM-centric code can move toward it **incrementally** without a big-bang rewrite.
 
 Default to the **Strangler Fig** pattern: new flows and high-risk areas first; leave stable legacy paths alone until touched.
@@ -61,7 +65,7 @@ Delete the wrapper after callers move to the use case.
 
 ### Phase 3: Extract Use Cases
 
-Turn service methods into async functions that accept ports:
+Turn service methods into async functions that accept ports. Full implementation: [`state-transitions.md`](./state-transitions.md#keep-use-cases-thin).
 
 ```python
 async def assign_driver_use_case(

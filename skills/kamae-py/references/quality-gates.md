@@ -1,5 +1,8 @@
 # Quality Gates
 
+> **When to read:** Before finishing changes to domain, boundary, PII, persistence, tests, or sample code. **Canonical command list** for local and CI checks.
+> **Related:** [`local-validation.md`](./local-validation.md), [`ci-setup.md`](./ci-setup.md), [`development-setup.md`](./development-setup.md).
+
 ## Baseline Commands
 
 Use uv to run project tools. Prefer the repository's existing commands when present; otherwise use these defaults for touched Python code:
@@ -14,6 +17,17 @@ uv run pytest
 For narrow changes, run the smallest command set that covers the touched files and state the limitation.
 
 For first-time local setup, read [`local-validation.md`](./local-validation.md) and copy or merge templates from [`../assets/templates/`](../assets/templates/). Installed skills include files under the skill directory, but do not reliably install this repository's root `pyproject.toml`, `uv.lock`, `.github/`, or `scripts/`.
+
+## Skill-Package and Policy Checks
+
+Skill/plugin repositories should also run:
+
+```bash
+uv run python scripts/validate_package.py
+uv run python path/to/kamae-py/scripts/check_kamae_policy.py --include-tests --strict
+```
+
+In the **kamae-py** repository itself, use `skills/kamae-py/scripts/check_kamae_policy.py`. Use `ruff format --check` in CI; apply with `ruff format .` locally when the check fails. See [`ci-setup.md`](./ci-setup.md) for workflow wiring and [`development-setup.md`](./development-setup.md) for this repo's dev workflow.
 
 ## Ruff Signals That Matter for Domain Safety
 
@@ -32,14 +46,7 @@ Do not require every lint to be globally enabled. Use them as review signals whe
 
 ## Type Checking
 
-Run mypy or pyright when the project has either configured. For Pydantic v2 projects, prefer mypy with `plugins = ["pydantic.mypy"]` and strict plugin flags:
-
-```toml
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-```
+Run mypy or pyright when the project has either configured. For Pydantic v2 projects, prefer mypy with `plugins = ["pydantic.mypy"]` and strict plugin flags (`init_forbid_extra`, `init_typed`, `warn_required_dynamic_aliases`). Full `[tool.mypy]` and `[tool.pydantic-mypy]` example: [`domain-modeling.md`](./domain-modeling.md#configure-mypy-with-the-pydantic-plugin).
 
 The plugin catches Pydantic-specific risks that plain mypy can miss: untyped model fields, frozen-model mutation, mistyped `model_construct`, invalid field defaults, extra constructor keywords, and required dynamic aliases.
 

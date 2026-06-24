@@ -1,5 +1,9 @@
 # Boundary Defense
 
+> **When to read:** Accepting API payloads, DB rows, env vars, files, queue messages, or external SDK responses.
+> **Related:** [`unsafe-boundaries.md`](./unsafe-boundaries.md), [`pydantic-performance.md`](./pydantic-performance.md), [`orm-adapters.md`](./orm-adapters.md).
+
+
 ## Parse Unknown Data at the Edge
 
 Treat API bodies, DB rows, queue messages, files, environment variables, and SDK responses as unknown until Pydantic validates them.

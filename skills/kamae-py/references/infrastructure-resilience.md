@@ -1,8 +1,8 @@
 # Infrastructure Resilience
 
-<!-- constrained-by ./error-handling.md -->
-<!-- constrained-by ./persistence-events.md -->
-<!-- derived-from ./application-wiring.md -->
+> **When to read:** Adding retry, timeout, or circuit-breaker behavior around external API, database, or queue adapters.
+> **Related:** [`error-handling.md`](./error-handling.md), [`persistence-events.md`](./persistence-events.md), [`application-wiring.md`](./application-wiring.md).
+
 
 ## Keep Resilience in Infrastructure
 

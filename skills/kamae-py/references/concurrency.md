@@ -1,7 +1,8 @@
 # Concurrency, the GIL, and Async Boundaries
 
-<!-- constrained-by ./application-wiring.md -->
-<!-- constrained-by ./state-transitions.md -->
+> **When to read:** CPU-bound domain work, the GIL, `ProcessPoolExecutor`, or blocking the asyncio event loop is a concern.
+> **Related:** [`application-wiring.md`](./application-wiring.md), [`state-transitions.md`](./state-transitions.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md).
+
 
 Kamae Python assumes **asyncio** for I/O-bound application code: HTTP handlers, repository adapters, queue consumers. Pure domain transitions stay **synchronous**. This split keeps business rules easy to test without an event loop.
 
@@ -15,20 +16,16 @@ Kamae Python assumes **asyncio** for I/O-bound application code: HTTP handlers, 
 | **CPU-bound work** | `ProcessPoolExecutor` or worker queue | Python threads do not parallelize CPU due to the GIL |
 
 ```python
-async def assign_driver_use_case(
-    resolver: RequestResolver,
-    store: RequestStore,
-    request_id: UUID,
-    driver_id: UUID,
-    now: datetime,
-) -> Result[EnRoute, AssignDriverError]:
-    waiting = await resolver.find_waiting(request_id)
-    if waiting is None:
-        return Err(AssignDriverError.not_found(request_id))
-    en_route = assign_driver(waiting, driver_id, now)  # sync pure transition
-    await store.save_en_route(en_route, events=(...), ...)
-    return Ok(en_route)
+# assign_driver_use_case — full flow in state-transitions.md
+waiting = await resolver.find_waiting(request_id)
+if waiting is None:
+    return Err(RequestNotFound(request_id=request_id))
+en_route = assign_driver(waiting, driver_id, now)  # sync; runs on the event loop
+await store.save_en_route(en_route, ...)
+return Ok(en_route)
 ```
+
+See [`state-transitions.md`](./state-transitions.md#keep-use-cases-thin) for the complete use case.
 
 The transition runs in the caller's thread on the event loop. That is fine when it is fast. It is not fine when it performs heavy CPU work.
 

@@ -1,8 +1,8 @@
 # ORM Adapters and Domain Mappers
 
-<!-- constrained-by ./migration-strategy.md -->
-<!-- constrained-by ./boundary-defense.md -->
-<!-- constrained-by ./persistence-events.md -->
+> **When to read:** Mapping SQLAlchemy 2.0 or Django ORM entities to Pydantic domain models in repository adapters.
+> **Related:** [`boundary-defense.md`](./boundary-defense.md), [`persistence-events.md`](./persistence-events.md), [`migration-strategy.md`](./migration-strategy.md).
+
 
 Kamae Python keeps ORM entity classes in **infrastructure**. Use cases and transitions see only Pydantic domain states. Adapters own the translation between persistence rows/entities and domain models.
 
@@ -201,25 +201,7 @@ def save_en_route_django(
 
 ## Repository Port Shape
 
-Ports return domain states, not ORM instances.
-
-```python
-class RequestResolver(Protocol):
-    async def find_waiting(self, request_id: UUID) -> Waiting | None: ...
-
-
-class RequestStore(Protocol):
-    async def save_en_route(
-        self,
-        state: EnRoute,
-        events: tuple[DriverAssigned, ...],
-        *,
-        expected_version: int,
-        idempotency_key: str,
-    ) -> None: ...
-```
-
-Narrow methods (`find_waiting`, `save_en_route`) document which lifecycle states are valid at each persistence operation.
+Ports return domain states, not ORM instances. Use the **canonical** port definitions in [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small). Narrow methods (`find_waiting`, `save_en_route`) document which lifecycle states are valid at each persistence operation.
 
 ## Migration Coexistence
 

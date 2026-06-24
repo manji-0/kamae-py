@@ -1,5 +1,9 @@
 # Test Data
 
+> **When to read:** Adding fixtures, factories, property-based tests, transition tests, boundary tests, or persistence retry tests.
+> **Related:** [`state-transitions.md`](./state-transitions.md), [`loggable-identifiers.md`](./loggable-identifiers.md), [`logging-metrics.md`](./logging-metrics.md).
+
+
 ## Build Fixtures Through Public Paths
 
 Fixtures should exercise the same Pydantic adapters, constructors, command builders, and transition functions as production code. Avoid raw dicts, `model_construct`, or partial literals unless the test is explicitly about corrupted input or migration compatibility.

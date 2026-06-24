@@ -1,7 +1,8 @@
-<!-- constrained-by ./pii-protection.md -->
-<!-- derived-from ./state-transitions.md -->
-
 # Logging and Metrics
+
+> **When to read:** Adding logs, metrics, traces, or observability around domain objects, state transitions, use cases, or domain events.
+> **Related:** [`loggable-identifiers.md`](./loggable-identifiers.md), [`pii-protection.md`](./pii-protection.md), [`state-transitions.md`](./state-transitions.md).
+
 
 ## Prefer OpenTelemetry for Telemetry Signals
 
@@ -63,17 +64,17 @@ Do not format sensitive values into the message string. Keep the message stable 
 
 ## Record Spans Around Use Cases and Adapters
 
-Use OpenTelemetry traces to follow a command through its lifecycle: use-case invocation, authorization, transition, event creation, and persistence. Add span attributes from the same safe, allowlisted set used for logs and metrics.
+Use OpenTelemetry traces to follow a command through its lifecycle: use-case invocation, authorization, transition, event creation, and persistence. Add span attributes from the same safe, allowlisted set used for logs and metrics. Wrap the **canonical** use case from [`state-transitions.md`](./state-transitions.md#keep-use-cases-thin):
 
 ```python
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
 
-async def assign_driver_use_case(...) -> Result[EnRoute, AssignDriverError]:
-    with tracer.start_as_current_span("assign_driver_use_case") as span:
-        span.set_attribute("request_id", str(request_id))
-        ...
+with tracer.start_as_current_span("assign_driver_use_case") as span:
+    span.set_attribute("request_id", str(request_id))
+    waiting = await resolver.find_waiting(request_id)
+    ...
 ```
 
 Keep span names stable and low-cardinality. Use attributes, not span names, for request-specific identifiers.
@@ -114,7 +115,7 @@ logger.info(
     "driver assigned",
     extra={
         "request_id": str(en_route.request_id),
-        "state_kind": en_route.kind,
+        "kind": en_route.kind,
     },
 )
 ```
@@ -127,7 +128,7 @@ logger.info(
     extra={
         "request_id": str(en_route.request_id),
         "driver_id": str(en_route.driver_id),
-        "state_kind": en_route.kind,
+        "kind": en_route.kind,
     },
 )
 ```
@@ -141,7 +142,7 @@ logger.info(f"driver assigned: {en_route.model_dump_json()}")
 
 ## Include Transition Information for Transition Processing
 
-When a log line accompanies a state change, include the transition name, the source state kind, and the target state kind. This makes it possible to follow an aggregate's lifecycle without reconstructing it from timestamps.
+When a log line accompanies a state change, include the transition name, the source state kind, and the target state kind. Emit logs from the use case after the pure transition ([`state-transitions.md`](./state-transitions.md#keep-use-cases-thin)):
 
 ```python
 logger.info(
@@ -153,24 +154,6 @@ logger.info(
         "target_kind": en_route.kind,
     },
 )
-```
-
-Return transition outcomes from pure transition functions, then log from the use case or adapter that orchestrated the change.
-
-```python
-async def assign_driver_use_case(...) -> Result[EnRoute, AssignDriverError]:
-    ...
-    en_route = assign_driver(waiting, driver_id, now)
-    logger.info(
-        "driver assigned",
-        extra={
-            "request_id": str(en_route.request_id),
-            "transition": "assign_driver",
-            "source_kind": waiting.kind,
-            "target_kind": en_route.kind,
-        },
-    )
-    ...
 ```
 
 ## Keep Logging Out of Pure Transition Functions

@@ -1,8 +1,8 @@
-<!-- constrained-by ./domain-modeling.md -->
-<!-- constrained-by ./persistence-events.md -->
-<!-- derived-from ./state-transitions.md -->
-
 # Aggregates and Transaction Boundaries
+
+> **When to read:** Choosing aggregate roots, consistency boundaries, optimistic vs pessimistic locking, or cross-aggregate workflows.
+> **Related:** [`persistence-events.md`](./persistence-events.md), [`state-transitions.md`](./state-transitions.md), [`error-handling.md`](./error-handling.md).
+
 
 ## What Counts as an Aggregate Here
 
@@ -66,16 +66,11 @@ A use case should not update two aggregate roots in one transaction unless the p
 
 The **repository adapter** should own the database transaction for `save(...)`. The use case owns business ordering; the adapter owns commit/rollback.
 
+Document transaction ownership on the port method. Parameters match the **canonical** port in [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small):
+
 ```python
 class RequestStore(Protocol):
-    async def save_en_route(
-        self,
-        state: EnRoute,
-        events: tuple[DriverAssigned, ...],
-        *,
-        expected_version: int,
-        idempotency_key: str,
-    ) -> None:
+    async def save_en_route(...) -> None:
         """Persist state and outbox rows atomically.
 
         Opens the transaction, writes aggregate state, inserts events/outbox
@@ -86,19 +81,7 @@ class RequestStore(Protocol):
 
 Avoid splitting `save_state` and `insert_events` into separate public repository methods unless tests use an in-memory fake that still enforces atomic semantics.
 
-The use case should read:
-
-```python
-async def assign_driver_use_case(...) -> Result[EnRoute, AssignDriverError]:
-    ...
-    try:
-        await store.save_en_route(en_route, (event,), expected_version=..., idempotency_key=...)
-    except VersionConflict:
-        return Err(InvalidState(...))
-    return Ok(en_route)
-```
-
-See [`error-handling.md`](./error-handling.md) for how infrastructure failures differ from `Err` outcomes.
+Map `VersionConflict` to `Err` in the use case — see [`error-handling.md`](./error-handling.md#preferred-pattern-early-return).
 
 ## Optimistic vs Pessimistic Concurrency
 

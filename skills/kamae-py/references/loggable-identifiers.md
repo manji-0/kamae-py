@@ -1,9 +1,8 @@
-<!-- constrained-by ./pii-protection.md -->
-<!-- derived-from ./logging-metrics.md -->
-
 # Loggable Identifier Criteria
 
-Use this reference when deciding which IDs may appear in logs, traces, errors, metrics, and domain events.
+> **When to read:** Deciding which IDs may appear in logs, traces, errors, metrics, and domain events.
+> **Related:** [`pii-protection.md`](./pii-protection.md), [`logging-metrics.md`](./logging-metrics.md), [`test-data.md`](./test-data.md).
+
 
 The default stance is **redact by default**. An identifier is loggable only when it passes the tests below and is recorded in an allowed channel.
 
@@ -84,7 +83,7 @@ When two Tier D IDs together make re-identification easier (for example `passeng
 
 Low-cardinality values from a closed set:
 
-- `kind`, `state_kind`, `source_kind`, `target_kind`
+- `kind` (current aggregate state), `source_kind`, `target_kind`
 - `transition`, `event_name`, `error_kind`, `outcome`
 - HTTP method, route template, tenant plan tier, region code (when the set is small and fixed)
 

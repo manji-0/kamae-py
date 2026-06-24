@@ -21,13 +21,54 @@ Kamae Python is a stance for server-side Python 3.12+ code where uv manages the 
 ## First Steps
 
 1. Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/mypy/pyright/pytest config, framework, and existing domain patterns.
-2. Default to `.python-version` containing a 3.12.x or 3.13.x version, `requires-python = ">=3.12,<3.14"`, and `pydantic>=2,<3` managed by uv.
+2. Default to `.python-version` containing a 3.12.x or 3.13.x version, `requires-python = ">=3.12,<3.14"`, and `pydantic>=2,<3` managed by uv. Prefer Pydantic **2.11+** when using PEP 695 generic models such as `TransitionOutcome[TState, TEvent]` (see [`state-transitions.md`](./references/state-transitions.md)).
 3. Default to mypy with the Pydantic v2 plugin: `plugins = ["pydantic.mypy"]` plus strict plugin flags under `[tool.pydantic-mypy]`.
 4. Use `uv add`, `uv add --dev`, `uv lock`, and `uv run ...`; do not introduce `pip`, `requirements.txt`, Poetry, or Pipenv unless the repository already standardizes on them.
 5. If `pydantic` is absent or version 1.x, ask before migrating existing code. For new code, add Pydantic v2 through uv.
 6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never` (3.11+), `typing.Self` (3.11+), and modern standard-library typing.
 7. Keep generated code consistent with existing module layout, naming, and dependency choices unless they conflict with the principles below.
 8. Read only the reference files needed for the current task.
+
+## Reading Paths
+
+Pick the path that matches the task. Read documents in order; skip steps already applied in the codebase.
+
+### Greenfield domain work
+
+1. [`domain-modeling.md`](./references/domain-modeling.md)
+2. [`state-transitions.md`](./references/state-transitions.md)
+3. [`boundary-defense.md`](./references/boundary-defense.md) and [`error-handling.md`](./references/error-handling.md)
+4. [`aggregates.md`](./references/aggregates.md) and [`persistence-events.md`](./references/persistence-events.md)
+5. [`taxi-request.py`](./references/taxi-request.py) for a compact end-to-end example
+6. [`quality-gates.md`](./references/quality-gates.md) before finishing
+
+### Brownfield migration
+
+1. [`migration-strategy.md`](./references/migration-strategy.md)
+2. [`boundary-defense.md`](./references/boundary-defense.md)
+3. [`orm-adapters.md`](./references/orm-adapters.md) when persistence uses an ORM
+4. Continue the greenfield path per migrated workflow
+
+### Observability and PII only
+
+1. [`pii-protection.md`](./references/pii-protection.md)
+2. [`loggable-identifiers.md`](./references/loggable-identifiers.md)
+3. [`logging-metrics.md`](./references/logging-metrics.md)
+4. [`test-data.md`](./references/test-data.md) for observability test assertions
+
+## Canonical Examples
+
+Avoid copying full snippets into new references. Link to these **canonical** definitions instead:
+
+| Topic | Canonical reference |
+| --- | --- |
+| Happy-path use case | [`state-transitions.md`](./references/state-transitions.md#keep-use-cases-thin) |
+| Persistence error mapping | [`error-handling.md`](./references/error-handling.md#preferred-pattern-early-return) |
+| Repository ports (production) | [`persistence-events.md`](./references/persistence-events.md#keep-repository-protocols-small) |
+| Repository ports (intro) | [`domain-modeling.md`](./references/domain-modeling.md#define-repository-ports-with-protocols) |
+| End-to-end code | [`taxi-request.py`](./references/taxi-request.py) |
+| Mypy / Pydantic plugin config | [`domain-modeling.md`](./references/domain-modeling.md#configure-mypy-with-the-pydantic-plugin) |
+| Quality gate commands | [`quality-gates.md`](./references/quality-gates.md#baseline-commands) |
 
 ## Principles
 

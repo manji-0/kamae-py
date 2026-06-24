@@ -1,5 +1,8 @@
 # Domain Modeling
 
+> **When to read:** Defining aggregate states, value objects, identifiers, repository protocols, or Pydantic discriminated unions.
+> **Related:** [`state-transitions.md`](./state-transitions.md), [`boundary-defense.md`](./boundary-defense.md), [`pydantic-performance.md`](./pydantic-performance.md).
+
 ## Use Pydantic v2 Variants for Domain States
 
 Assume Python 3.12+ and Pydantic v2. Define each business state as a separate frozen Pydantic model. Use one project-wide discriminator named `kind`.
@@ -184,6 +187,8 @@ Domain constructors and Pydantic adapters should be authoritative. Tests, reposi
 ## Define Repository Ports With Protocols
 
 Use `typing.Protocol` for domain-facing ports. Keep method signatures narrow and return domain states or explicit result types.
+
+This is the **minimal** port shape for introducing protocols. For production stores with optimistic locking, idempotency keys, and event tuples, use the **canonical** definitions in [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small).
 
 ```python
 from typing import Protocol

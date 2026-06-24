@@ -1,5 +1,9 @@
 # Native and Unsafe Boundaries
 
+> **When to read:** Touching `ctypes`, `cffi`, native extensions, `model_construct`, broad casts, unchecked bytes, or other code that bypasses Python/Pydantic invariants.
+> **Related:** [`boundary-defense.md`](./boundary-defense.md), [`pydantic-performance.md`](./pydantic-performance.md).
+
+
 ## Default Stance
 
 Keep unchecked operations out of domain logic. Domain models, value objects, state transitions, use cases, DTO conversion, PII redaction, and repository protocols should not use native pointer APIs or bypass Pydantic validation.

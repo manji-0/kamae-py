@@ -1,8 +1,13 @@
 # CI Setup
 
+> **Audience:** Projects installing the skill into their own repository. For the `kamae-py` skill repo itself, read [`development-setup.md`](./development-setup.md).
+> **When to read:** Creating or updating GitHub Actions, branch protection guidance, or repository validation jobs.
+> **Related:** [`quality-gates.md`](./quality-gates.md) (checks CI must run), [`local-validation.md`](./local-validation.md).
+
+
 ## Default GitHub Actions Workflow
 
-Use CI to make the Kamae Python stance executable: Python 3.12+, uv, Ruff, mypy with the Pydantic v2 plugin, pytest, and package validation should run before merging domain changes.
+CI should run the same checks as [`quality-gates.md`](./quality-gates.md). Use `uv sync --locked` so lockfile drift fails the build.
 
 When this skill is installed, use the bundled templates under [`../assets/templates/`](../assets/templates/):
 

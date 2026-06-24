@@ -1,8 +1,14 @@
 # Persistence and Events
 
+> **When to read:** Designing repositories, transactions, outbox records, idempotent commands, optimistic locking, or event payloads.
+> **Related:** [`aggregates.md`](./aggregates.md), [`orm-adapters.md`](./orm-adapters.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md).
+
+
 Read [`aggregates.md`](./aggregates.md) for aggregate roots, one-command consistency boundaries, and who owns transactions.
 
 ## Keep Repository Protocols Small
+
+**Canonical** `RequestResolver` and `RequestStore` definitions for optimistic locking, idempotency, and event persistence:
 
 Repository protocols should express use-case needs, not ORM convenience. Split read and write interfaces when it keeps callers from depending on broad CRUD operations.
 

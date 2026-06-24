@@ -1,5 +1,11 @@
 # PII Protection
 
+> **When to read:** Domain models, DTOs, logs, metrics, errors, traces, or events contain personal data, credentials, tokens, or customer-identifying fields.
+> **Related:** [`loggable-identifiers.md`](./loggable-identifiers.md) (tier rules and channel policy), [`logging-metrics.md`](./logging-metrics.md).
+
+
+Tiered allowlists and channel rules live in [`loggable-identifiers.md`](./loggable-identifiers.md). This document covers redaction wrappers and exposure policy.
+
 ## Redact by Default
 
 Personal data and secrets should be hard to log accidentally. PII includes names, email addresses, phone numbers, addresses, government IDs, payment identifiers, health data, IP addresses, device identifiers, precise location, and tenant/customer identifiers when they can identify a person or account.

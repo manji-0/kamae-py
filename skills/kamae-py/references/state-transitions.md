@@ -1,5 +1,9 @@
 # State Transitions
 
+> **When to read:** Implementing transitions, use cases, domain events, or exhaustive union branching.
+> **Related:** [`error-handling.md`](./error-handling.md), [`aggregates.md`](./aggregates.md), [`logging-metrics.md`](./logging-metrics.md).
+
+
 ## Express Valid Transitions as Functions
 
 Write a pure function for each allowed transition. The input type should be the allowed source state and the return type should be the target state.
@@ -55,7 +59,7 @@ Requires Pydantic 2.11+ for PEP 695 generic model syntax. On earlier 2.x release
 
 ## Keep Use Cases Thin
 
-Use cases orchestrate loading, checking preconditions, calling pure transitions, building events, and persisting state plus events. Keep business rules in named functions that are easy to unit test.
+**Canonical** happy-path use case example. Use cases orchestrate loading, checking preconditions, calling pure transitions, building events, and persisting state plus events. Keep business rules in named functions that are easy to unit test.
 
 ```python
 async def assign_driver_use_case(
@@ -103,19 +107,7 @@ async def assign_driver_use_case(
 
 Lifecycle and balance transitions need concurrency protection when two commands can race. Use optimistic version fields, conditional updates, unique constraints, idempotency keys, row locks, serializable transactions, or a single-writer queue according to the system's architecture.
 
-Repository protocols should make the concurrency expectation visible.
-
-```python
-class RequestStore(Protocol):
-    async def save_en_route(
-        self,
-        state: EnRoute,
-        events: tuple[DriverAssigned, ...],
-        *,
-        expected_version: int,
-        idempotency_key: str,
-    ) -> None: ...
-```
+Repository protocols should make the concurrency expectation visible. Use the **canonical** `RequestStore` signature in [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small) (`expected_version`, `idempotency_key`, event tuple).
 
 ## Model Domain Events as Immutable Records
 

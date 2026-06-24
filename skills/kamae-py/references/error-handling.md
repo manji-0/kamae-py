@@ -1,5 +1,9 @@
 # Error Handling
 
+> **When to read:** Modeling use-case failures, mapping errors to HTTP responses, async `Result` flows, or deciding whether to raise exceptions.
+> **Related:** [`state-transitions.md`](./state-transitions.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md), [`pii-protection.md`](./pii-protection.md).
+
+
 ## Keep Expected Failures Explicit
 
 Use-case failures should be specific to the operation. Avoid one catch-all `AppError` for every business path.
@@ -22,7 +26,7 @@ type AssignDriverError = Annotated[
 ]
 ```
 
-Use Pydantic error variants when errors cross process, API, queue, or persistence boundaries. Frozen dataclasses are fine for purely in-process errors if the project already prefers them.
+Use Pydantic error variants when errors cross process, API, queue, or persistence boundaries. Return `Err` with a specific variant (for example `RequestNotFound(request_id=...)`) rather than factory helpers on a union alias unless the project already standardizes on them. Frozen dataclasses are fine for purely in-process errors if the project already prefers them.
 
 ## Prefer Result Values for Domain Flow
 
@@ -89,20 +93,9 @@ Pure transitions stay synchronous. Only use cases and adapters are async.
 
 ### Preferred Pattern: Early Return
 
-Prefer readable early returns over long monadic chains.
+Prefer readable early returns over long monadic chains. Start from the **canonical** use case in [`state-transitions.md`](./state-transitions.md#keep-use-cases-thin); add persistence error mapping around `save_en_route`:
 
 ```python
-async def assign_driver_use_case(
-    resolver: RequestResolver,
-    store: RequestStore,
-    request_id: UUID,
-    driver_id: UUID,
-    now: datetime,
-) -> Result[EnRoute, AssignDriverError]:
-    waiting = await resolver.find_waiting(request_id)
-    if waiting is None:
-        return Err(RequestNotFound(request_id=request_id))
-
     en_route = assign_driver(waiting, driver_id, now)
     event = driver_assigned_event(en_route, now)
 

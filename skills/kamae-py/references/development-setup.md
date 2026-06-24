@@ -1,8 +1,9 @@
-<!-- constrained-by ./local-validation.md -->
-<!-- constrained-by ./ci-setup.md -->
-<!-- derived-from ../scripts/apply_templates.py -->
-
 # Development Environment Setup
+
+> **Audience:** Contributors working in the **kamae-py** skill repository (not generic install targets).
+> **When to read:** Setting up a local workspace to develop or test this skill package.
+> **Related:** [`quality-gates.md`](./quality-gates.md) (canonical check commands), [`local-validation.md`](./local-validation.md), [`ci-setup.md`](./ci-setup.md).
+
 
 ## Prerequisites
 
@@ -32,18 +33,15 @@ All tests should pass before you make changes.
 
 ## Run the Local Quality Gates
 
-Use the same commands locally that CI runs:
+Run the baseline commands in [`quality-gates.md`](./quality-gates.md). For this repository, also run:
 
 ```bash
 uv run python scripts/validate_package.py
 uv run python skills/kamae-py/scripts/check_kamae_policy.py --include-tests --strict
 uv run ruff format --check .
-uv run ruff check .
-uv run mypy .
-uv run pytest
 ```
 
-Apply formatting with `uv run ruff format .` if `ruff format --check` fails.
+Apply formatting with `uv run ruff format .` if the format check fails.
 
 ## Working on the Skill Package
 

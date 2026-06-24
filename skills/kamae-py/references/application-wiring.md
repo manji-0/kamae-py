@@ -1,7 +1,8 @@
-<!-- constrained-by ./domain-modeling.md -->
-<!-- derived-from ./state-transitions.md -->
-
 # Application Wiring and Ports
+
+> **When to read:** Wiring use cases to repository ports, framework entrypoints, fakes, or deciding between explicit arguments and DI containers.
+> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`concurrency.md`](./concurrency.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md).
+
 
 ## Default Stance: Explicit Arguments, Not a DI Container
 
@@ -20,7 +21,7 @@ async def assign_driver_use_case(
     ...
 ```
 
-Dependencies enter at the use-case boundary as typed ports. Pure transition functions stay free of infrastructure.
+Dependencies enter at the use-case boundary as typed ports. Pure transition functions stay free of infrastructure. Full orchestration example: [`state-transitions.md`](./state-transitions.md#keep-use-cases-thin).
 
 Do not adopt a DI container for new code unless the repository already standardizes on one.
 
@@ -37,23 +38,7 @@ Domain code must not import infrastructure packages.
 
 ## Ports and Adapters
 
-**Ports** are `typing.Protocol` types that express what a use case needs.
-
-```python
-class RequestResolver(Protocol):
-    async def find_waiting(self, request_id: UUID) -> Waiting | None: ...
-
-
-class RequestStore(Protocol):
-    async def save_en_route(
-        self,
-        state: EnRoute,
-        events: tuple[DriverAssigned, ...],
-        *,
-        expected_version: int,
-        idempotency_key: str,
-    ) -> None: ...
-```
+**Ports** are `typing.Protocol` types that express what a use case needs. **Canonical** `RequestResolver` and `RequestStore` shapes: [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small). Introductory port concepts: [`domain-modeling.md`](./domain-modeling.md#define-repository-ports-with-protocols).
 
 **Adapters** are concrete implementations in infrastructure modules.
 
@@ -109,7 +94,7 @@ If the project already uses FastAPI `Depends`, use it at the controller boundary
 
 ## Testing With Fakes
 
-Tests should pass in-memory or fake adapters through the same port types production uses.
+Tests should pass in-memory or fake adapters through the same port types production uses. The fake implements the **canonical** port in [`persistence-events.md`](./persistence-events.md#keep-repository-protocols-small).
 
 ```python
 class FakeRequestStore:

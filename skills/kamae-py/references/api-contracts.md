@@ -1,5 +1,9 @@
 # API Contracts and Docstrings
 
+> **When to read:** Documenting public domain APIs, repository protocols, transition functions, DTO conversion, event schemas, or safe wrappers.
+> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`state-transitions.md`](./state-transitions.md), [`unsafe-boundaries.md`](./unsafe-boundaries.md).
+
+
 ## Document Domain Contracts, Not Narration
 
 Public domain APIs should explain what callers may rely on: invariants, construction paths, state transitions, errors, side effects, transaction expectations, idempotency, redaction, and unsafe/native boundary contracts.
