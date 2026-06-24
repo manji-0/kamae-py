@@ -1,7 +1,10 @@
 {
   "name": "kamae-py",
-  "description": "Kamae Python - server-side Python 3.12+ domain modeling with uv, Pydantic v2 discriminated unions, and pure state transitions",
   "version": "0.1.0",
+  "description": "Kamae Python - server-side Python 3.12+ domain modeling and review with rules-based customization",
+  "author": {
+    "name": "kamae-py contributors"
+  },
   "repository": "https://github.com/manji-0/kamae-py",
   "license": "MIT",
   "keywords": [
@@ -11,7 +14,28 @@
     "domain-modeling",
     "discriminated-union",
     "state-transitions",
+    "rules",
+    "customization",
     "coding-agent",
     "server-side"
-  ]
+  ],
+  "skills": [
+    "./skills/kamae-py",
+    "./skills/kamae-py-review"
+  ],
+  "interface": {
+    "displayName": "Kamae Python",
+    "shortDescription": "Robust Python domain design and review",
+    "longDescription": "Server-side Python design and review skills with rules-based customization. Override dependency preferences, conventions, and review checks via .claude/rules/, .codex/rules/, or user-level rule directories. Plugin defaults live in rules/defaults/. See rules/README.md.",
+    "developerName": "kamae-py contributors",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write",
+      "Review"
+    ],
+    "defaultPrompt": [
+      "Use $kamae-py to design a server-side Python domain model with Pydantic v2 unions.",
+      "Use $kamae-py-review to review this Python domain diff."
+    ]
+  }
 }

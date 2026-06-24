@@ -19,6 +19,13 @@ CODEX_MARKETPLACE_MANIFEST = ROOT / ".codex-plugin" / "marketplace.json"
 FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
 MD_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 FENCED_CODE_RE = re.compile(r"```.*?```", re.DOTALL)
+REFERENCE_GUIDE_RE = re.compile(r"references/[A-Za-z0-9_-]+\.md")
+
+RULES_DEFAULTS = ROOT / "rules" / "defaults"
+SKILL_ROOT = SKILLS_ROOT / "kamae-py"
+RULE_REQUIRED_FIELDS = ("name", "description", "applies-to", "type", "alwaysApply")
+RULE_APPLIES_TO = {"kamae-py", "kamae-py-review", "*"}
+RULE_TYPES = {"library-preference", "check-toggle", "convention", "override"}
 
 
 def as_list(value: object) -> list[object]:
@@ -153,11 +160,47 @@ def check_python_syntax(errors: list[str]) -> None:
             fail(errors, f"{rel(path)}: Python syntax error: {exc.msg}")
 
 
+def check_rule_frontmatter(errors: list[str]) -> None:
+    if not RULES_DEFAULTS.is_dir():
+        fail(errors, f"{rel(RULES_DEFAULTS)}: missing rules defaults directory")
+        return
+
+    for path in sorted(RULES_DEFAULTS.glob("*.md")):
+        data = parse_frontmatter(path, errors)
+        for key in RULE_REQUIRED_FIELDS:
+            if not data.get(key):
+                fail(errors, f"{rel(path)}: missing required rule frontmatter field {key}")
+        applies_to = data.get("applies-to", "")
+        if applies_to and applies_to not in RULE_APPLIES_TO:
+            fail(errors, f"{rel(path)}: invalid applies-to {applies_to!r}")
+        rule_type = data.get("type", "")
+        if rule_type and rule_type not in RULE_TYPES:
+            fail(errors, f"{rel(path)}: invalid type {rule_type!r}")
+
+
+def check_dependency_detection_references(errors: list[str]) -> None:
+    sources = [
+        RULES_DEFAULTS / "dependency-detection.md",
+        SKILL_ROOT / "SKILL.md",
+    ]
+    for path in sources:
+        if not path.is_file():
+            fail(errors, f"{rel(path)}: missing dependency detection source")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for guide in sorted(set(REFERENCE_GUIDE_RE.findall(text))):
+            guide_path = SKILL_ROOT / guide
+            if not guide_path.is_file():
+                fail(errors, f"{rel(path)}: referenced guide does not exist: {guide}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_manifest_skill_paths(errors)
     check_skill_frontmatter(errors)
+    check_rule_frontmatter(errors)
     check_markdown_links(errors)
+    check_dependency_detection_references(errors)
     check_python_syntax(errors)
 
     if errors:

@@ -34,7 +34,7 @@ For each rule:
 
 ## Step 1: Detect Python Context
 
-Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/mypy/pyright/pytest config, framework, and existing domain patterns.
+1. Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/mypy/pyright/pytest config, framework, and existing domain patterns.
 2. Default to `.python-version` containing a 3.12.x or 3.13.x version, `requires-python = ">=3.12,<3.14"`, and `pydantic>=2,<3` managed by uv. Prefer Pydantic **2.11+** when using PEP 695 generic models such as `TransitionOutcome[TState, TEvent]` (see [`state-transitions.md`](./references/state-transitions.md)).
 3. Default to mypy with the Pydantic v2 plugin: `plugins = ["pydantic.mypy"]` plus strict plugin flags under `[tool.pydantic-mypy]`.
 4. Use `uv add`, `uv add --dev`, `uv lock`, and `uv run ...`; do not introduce `pip`, `requirements.txt`, Poetry, or Pipenv unless the repository already standardizes on them.

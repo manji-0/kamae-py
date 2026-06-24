@@ -25,6 +25,8 @@ The package includes both Claude and Codex manifests:
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` describe the Claude plugin package.
 - `.codex-plugin/plugin.json` and `.codex-plugin/marketplace.json` describe the Codex plugin package.
 
+Rules-based customization is documented in [`rules/README.md`](./rules/README.md). Override plugin defaults from `.claude/rules/` or `.codex/rules/` in your project, or from user-level rule directories.
+
 ## Development
 
 This repository assumes uv and Python 3.12+ (currently pinned to `.python-version`).

@@ -1,13 +1,13 @@
 {
   "name": "kamae-py",
   "metadata": {
-    "description": "Kamae Python - robust server-side Python 3.12+ design harness",
+    "description": "Kamae Python - robust server-side Python 3.12+ design harness with rules-based customization",
     "version": "0.1.0"
   },
   "plugins": [
     {
       "name": "kamae-py",
-      "description": "Server-side Python design skill with uv, Pydantic v2 discriminated unions, and pure state transitions",
+      "description": "Server-side Python design and review skills with rules-based customization, uv, Pydantic v2 discriminated unions, and pure state transitions",
       "source": "./",
       "strict": false,
       "skills": [

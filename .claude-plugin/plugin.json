@@ -1,6 +1,6 @@
 {
   "name": "kamae-py",
-  "description": "Kamae Python - server-side Python 3.12+ domain modeling with uv, Pydantic v2 discriminated unions, and pure state transitions",
+  "description": "Kamae Python - server-side Python 3.12+ domain modeling with rules-based customization, uv, Pydantic v2 discriminated unions, and pure state transitions",
   "version": "0.1.0",
   "author": {
     "name": "kamae-py contributors"
@@ -18,6 +18,8 @@
     "domain-modeling",
     "discriminated-union",
     "state-transitions",
+    "rules",
+    "customization",
     "coding-agent",
     "server-side"
   ]
