@@ -199,3 +199,7 @@ Read [`references/taxi-request.py`](./references/taxi-request.py) when a compact
 Use judgment. If an existing codebase has a documented alternative pattern, follow it unless it weakens boundary validation or makes invalid states easy to represent. When deviating from these principles in new code, leave a short comment explaining the constraint.
 
 For brownfield codebases, start with [`references/migration-strategy.md`](./references/migration-strategy.md) instead of attempting a full rewrite.
+
+## Reviewing Changes
+
+Use [`../kamae-py-review/SKILL.md`](../kamae-py-review/SKILL.md) on changed paths even if surrounding code is still legacy. For small diffs, run `python skills/kamae-py-review/scripts/review_probe.py <paths>` first and load only the routed checklists plus `tests.md` when behavior changes.

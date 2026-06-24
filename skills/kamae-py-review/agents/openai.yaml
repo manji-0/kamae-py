@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kamae Python Review"
+  short_description: "Review robust Python domain code"
+  default_prompt: "Use $kamae-py-review to review this Python domain diff for validation, invariants, PII, and tests."

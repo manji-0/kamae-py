@@ -2,9 +2,10 @@
 
 Kamae Python is a Codex skill for robust server-side Python 3.12+ domain modeling with uv, Pydantic v2 discriminated unions, frozen state models, pure transition functions, boundary validation, and explicit domain errors.
 
-The first skill in this repository is:
+Skills in this repository:
 
 - `kamae-py` - generation guidance for Python backend domain models, use cases, state transitions, and boundary parsing.
+- `kamae-py-review` - adversarial review checklists for Python domain diffs, with an optional `review_probe.py` router for changed paths.
 
 ## Install
 

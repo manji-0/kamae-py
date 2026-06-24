@@ -11,7 +11,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/kamae-py"
+        "./skills/kamae-py",
+        "./skills/kamae-py-review"
       ]
     }
   ]
