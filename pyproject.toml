@@ -1,6 +1,6 @@
 [project]
 name = "kamae-py"
-version = "0.1.0"
+version = "0.2.0"
 description = "Kamae Python skill for server-side Python domain modeling with Pydantic v2"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
