@@ -23,7 +23,7 @@ Guide-backed detections:
 Detection-only dependencies:
 
 - Package management: confirm uv usage from `[tool.uv]`, lockfile, or documented project convention
-- Type checking: `mypy`, `pyright`; prefer the Pydantic v2 mypy plugin when `pydantic` is present
+- Type checking: `pyrefly`, `mypy`, `pyright`; prefer pyrefly when `pydantic` is present because Pydantic v2 support is built in
 - Lint/format: `ruff`
 - Testing: `pytest`, `pytest-asyncio`
 - Async HTTP/clients: `httpx`, `aiohttp`

@@ -20,7 +20,7 @@ class TemplateCopy:
 
 
 BASE_TEMPLATES = (
-    TemplateCopy("pyproject.toml", Path("pyproject.toml"), "uv/Pydantic/Ruff/mypy/pytest config"),
+    TemplateCopy("pyproject.toml", Path("pyproject.toml"), "uv/Pydantic/Ruff/pyrefly/pytest config"),
     TemplateCopy("gitignore", Path(".gitignore"), "Python tool cache ignores"),
 )
 

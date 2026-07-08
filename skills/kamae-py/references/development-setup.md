@@ -90,6 +90,6 @@ CI runs `uv sync --locked`, so a stale lockfile fails the build.
 
 ## Troubleshooting
 
-- **Mypy reports missing `pydantic.mypy` plugin**: Ensure `[tool.mypy] plugins = ["pydantic.mypy"]` is set and the virtual environment is active through `uv run`.
+- **Pyrefly reports unexpected Pydantic constructor fields**: Ensure domain models set `extra="forbid"` in `ConfigDict` and run checks through `uv run`.
 - **Lockfile drift**: Run `uv lock` and commit the updated `uv.lock`.
-- **Policy checker fails on a new reference**: The checker only inspects `src/` and `tests/` by default. Skill repositories are checked with `--include-tests`. If you added code elsewhere, add the path to `[tool.mypy].files` or run the checker with the appropriate scope.
+- **Policy checker fails on a new reference**: The checker only inspects `src/` and `tests/` by default. Skill repositories are checked with `--include-tests`. If you added code elsewhere, add the path to `[tool.pyrefly].project-includes` or run the checker with the appropriate scope.

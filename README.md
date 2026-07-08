@@ -45,7 +45,7 @@ uv run python scripts/validate_package.py
 uv run python skills/kamae-py/scripts/check_kamae_policy.py --include-tests --strict
 uv run ruff format --check .
 uv run ruff check .
-uv run mypy .
+uv run pyrefly check .
 uv run pytest
 ```
 
@@ -63,7 +63,7 @@ The skill also includes `skills/kamae-py/scripts/apply_templates.py` to copy tho
 - Redact PII and secrets by default, including logs, metrics, errors, and events.
 - Persist state changes and domain events atomically with idempotent retry paths.
 - Exercise constructors, transitions, boundary parsing, redaction, and persistence edges in tests.
-- Keep uv-run Ruff, mypy with the Pydantic v2 plugin, and pytest gates clean for touched domain code.
+- Keep uv-run Ruff, pyrefly (built-in Pydantic v2 support), and pytest gates clean for touched domain code.
 
 See `skills/kamae-py/SKILL.md` for the dispatching guide and `skills/kamae-py/references/` for detailed references.
 

@@ -82,7 +82,7 @@ jobs:
         run: uv run ruff check .
 
       - name: Type check
-        run: uv run mypy .
+        run: uv run pyrefly check .
 
       - name: Test
         run: uv run pytest
@@ -98,7 +98,7 @@ Keep these checks required for pull requests that touch domain, boundary, PII, p
 
 - Package validation for plugin manifests, skill frontmatter, links, and Python syntax.
 - Ruff formatting and linting.
-- Mypy strict mode with `plugins = ["pydantic.mypy"]`.
+- Pyrefly with built-in Pydantic v2 support.
 - Pytest coverage for constructors, transitions, boundary parsing, redaction, persistence retries, and event compatibility.
 
 ## Pinning and Updates

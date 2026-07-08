@@ -84,7 +84,7 @@ If validation is below ~5% of wall time in a realistic load test, prefer clarity
 
 ## msgspec Boundary → Pydantic Domain Pipeline
 
-[msgspec](https://jcristharif.com/msgspec/) and similar libraries can outperform Pydantic on JSON encode/decode for simple, stable schemas. Kamae Python still prefers Pydantic for domain states and discriminated unions because of validator expressiveness, ecosystem integration, and mypy plugin support.
+[msgspec](https://jcristharif.com/msgspec/) and similar libraries can outperform Pydantic on JSON encode/decode for simple, stable schemas. Kamae Python still prefers Pydantic for domain states and discriminated unions because of validator expressiveness, ecosystem integration, and pyrefly's built-in Pydantic support.
 
 Acceptable pattern: **msgspec at the wire edge, Pydantic for domain.**
 

@@ -34,9 +34,9 @@ For each rule:
 
 ## Step 1: Detect Python Context
 
-1. Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/mypy/pyright/pytest config, framework, and existing domain patterns.
+1. Inspect `pyproject.toml`, `.python-version`, `uv.lock`, Ruff/pyrefly/pyright/pytest config, framework, and existing domain patterns.
 2. Default to `.python-version` containing a 3.12.x or 3.13.x version, `requires-python = ">=3.12,<3.14"`, and `pydantic>=2,<3` managed by uv. Prefer Pydantic **2.11+** when using PEP 695 generic models such as `TransitionOutcome[TState, TEvent]` (see [`state-transitions.md`](./references/state-transitions.md)).
-3. Default to mypy with the Pydantic v2 plugin: `plugins = ["pydantic.mypy"]` plus strict plugin flags under `[tool.pydantic-mypy]`.
+3. Default to pyrefly for type checking. Pydantic v2 support is built in; encode strictness in model config (`extra="forbid"`, `frozen=True`, field `strict=True`) instead of a separate plugin.
 4. Use `uv add`, `uv add --dev`, `uv lock`, and `uv run ...`; do not introduce `pip`, `requirements.txt`, Poetry, or Pipenv unless the repository already standardizes on them.
 5. If `pydantic` is absent or version 1.x, ask before migrating existing code. For new code, add Pydantic v2 through uv.
 6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never` (3.11+), `typing.Self` (3.11+), and modern standard-library typing.
@@ -81,7 +81,7 @@ Avoid copying full snippets into new references. Link to these **canonical** def
 | Repository ports (production) | [`persistence-events.md`](./references/persistence-events.md#keep-repository-protocols-small) |
 | Repository ports (intro) | [`domain-modeling.md`](./references/domain-modeling.md#define-repository-ports-with-protocols) |
 | End-to-end code | [`taxi-request.py`](./references/taxi-request.py) |
-| Mypy / Pydantic plugin config | [`domain-modeling.md`](./references/domain-modeling.md#configure-mypy-with-the-pydantic-plugin) |
+| Pyrefly / Pydantic config | [`domain-modeling.md`](./references/domain-modeling.md#configure-pyrefly-for-pydantic-models) |
 | Quality gate commands | [`quality-gates.md`](./references/quality-gates.md#baseline-commands) |
 
 ## Principles
@@ -182,7 +182,7 @@ Docstrings should explain invariants, accepted construction paths, errors, side 
 
 Read [`references/quality-gates.md`](./references/quality-gates.md) before finishing changes to domain, boundary, PII, persistence, tests, or sample code.
 
-Prefer `uv run ruff format`, `uv run ruff check`, `uv run mypy`, and focused `uv run pytest` commands for touched code.
+Prefer `uv run ruff format`, `uv run ruff check`, `uv run pyrefly check`, and focused `uv run pytest` commands for touched code.
 
 ### Development Environment Setup
 
@@ -192,7 +192,7 @@ Install uv, run `uv python install` and `uv sync`, then run the full local quali
 
 ### Local Validation Setup
 
-Read [`references/local-validation.md`](./references/local-validation.md) when bootstrapping local `pyproject.toml`, `.gitignore`, mypy/Pydantic plugin settings, Ruff, pytest, or skill-package validation.
+Read [`references/local-validation.md`](./references/local-validation.md) when bootstrapping local `pyproject.toml`, `.gitignore`, pyrefly/Pydantic settings, Ruff, pytest, or skill-package validation.
 
 Use [`scripts/apply_templates.py`](./scripts/apply_templates.py) to copy templates from [`assets/templates/`](./assets/templates/), or merge the templates manually. Repo-root files are not guaranteed to be installed with the skill.
 

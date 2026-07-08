@@ -10,7 +10,7 @@ Use uv to run project tools. Prefer the repository's existing commands when pres
 ```bash
 uv run ruff format .
 uv run ruff check .
-uv run mypy .
+uv run pyrefly check .
 uv run pytest
 ```
 
@@ -46,9 +46,9 @@ Do not require every lint to be globally enabled. Use them as review signals whe
 
 ## Type Checking
 
-Run mypy or pyright when the project has either configured. For Pydantic v2 projects, prefer mypy with `plugins = ["pydantic.mypy"]` and strict plugin flags (`init_forbid_extra`, `init_typed`, `warn_required_dynamic_aliases`). Full `[tool.mypy]` and `[tool.pydantic-mypy]` example: [`domain-modeling.md`](./domain-modeling.md#configure-mypy-with-the-pydantic-plugin).
+Run pyrefly or pyright when the project has either configured. For Pydantic v2 projects, prefer pyrefly: Pydantic support is built in and reads model config such as `extra="forbid"`, `frozen=True`, and field `strict=True` directly. Full `[tool.pyrefly]` example: [`domain-modeling.md`](./domain-modeling.md#configure-pyrefly-for-pydantic-models).
 
-The plugin catches Pydantic-specific risks that plain mypy can miss: untyped model fields, frozen-model mutation, mistyped `model_construct`, invalid field defaults, extra constructor keywords, and required dynamic aliases.
+Pyrefly catches Pydantic-specific risks that plain type checkers can miss: frozen-model mutation, mistyped `model_construct`, extra constructor keywords, and alias mismatches.
 
 Avoid weakening type checks around discriminated unions, repository protocols, result values, boundary DTOs, or Pydantic model construction.
 
@@ -79,9 +79,9 @@ repos:
         entry: uv run ruff check --fix
         language: system
         types: [python]
-      - id: mypy
-        name: mypy
-        entry: uv run mypy
+      - id: pyrefly
+        name: pyrefly
+        entry: uv run pyrefly check
         language: system
         types: [python]
         pass_filenames: false
@@ -118,7 +118,7 @@ lint:
 	uv run ruff check .
 
 typecheck:
-	uv run mypy .
+	uv run pyrefly check .
 
 test:
 	uv run pytest
@@ -142,7 +142,7 @@ tasks:
     cmds: [uv run ruff check .]
 
   typecheck:
-    cmds: [uv run mypy .]
+    cmds: [uv run pyrefly check .]
 
   test:
     cmds: [uv run pytest]

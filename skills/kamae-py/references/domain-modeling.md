@@ -92,7 +92,7 @@ Set `ConfigDict(frozen=True, extra="forbid")` on domain Pydantic models. State c
 
 Avoid public setters, partial update helpers, or `model_copy(update=...)` paths that can violate cross-field invariants. If an update is a business action, name it as a transition or command and make it validate the full invariant.
 
-With the Pydantic mypy plugin enabled, frozen models are also statically checked: assigning to a model field should fail in mypy before runtime.
+With pyrefly enabled, frozen models are also statically checked: assigning to a model field should fail before runtime.
 
 ## Separate Domain Models From Transport DTOs When Needed
 
@@ -227,23 +227,22 @@ uv lock
 
 For skill or documentation repositories that are not importable Python packages, set `package = false` under `[tool.uv]`.
 
-## Configure Mypy With the Pydantic Plugin
+## Configure Pyrefly for Pydantic Models
 
-Use the Pydantic v2 mypy plugin in projects that rely on Pydantic domain models. It improves static checks for model `__init__`, `model_construct`, frozen models, field defaults, untyped fields, and dynamic aliases.
+Use pyrefly in projects that rely on Pydantic domain models. Pydantic v2 support is built in and improves static checks for model `__init__`, `model_construct`, frozen models, field defaults, extra fields, and aliases. Run `pyrefly init` to migrate an existing mypy config, or start from the template below.
 
 ```toml
-[tool.mypy]
-python_version = "3.12"
-strict = true
-plugins = ["pydantic.mypy"]
+[dependency-groups]
+dev = [
+    "pyrefly>=1.1.1",
+]
 
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
+[tool.pyrefly]
+project-includes = ["src", "tests"]
+python-version = "3.12.0"
 ```
 
-Keep `init_typed = true` so constructor calls are checked against field types instead of accepting `Any` for Pydantic's default coercion behavior. Keep `init_forbid_extra = true` so unexpected constructor keywords are not hidden behind `**kwargs: Any`. Avoid required dynamic aliases on domain models because they weaken constructor checking.
+Encode Pydantic strictness in the models themselves: `extra="forbid"` on `ConfigDict`, `frozen=True` for immutable states, and `Field(strict=True)` when coercion must be rejected. Pyrefly reads those settings directly instead of separate plugin flags such as mypy's `init_forbid_extra` or `init_typed`. Avoid required dynamic aliases on domain models because they weaken constructor checking.
 
 ## Choose Pydantic, dataclasses, or attrs
 

@@ -30,15 +30,14 @@ dependencies = [
 [tool.ruff]
 target-version = "py312"
 
-[tool.mypy]
-python_version = "3.12"
-strict = true
-plugins = ["pydantic.mypy"]
+[dependency-groups]
+dev = [
+    "pyrefly>=1.1.1",
+]
 
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
+[tool.pyrefly]
+project-includes = ["src"]
+python-version = "3.12.0"
 """
 
 GOOD_SOURCE = """\

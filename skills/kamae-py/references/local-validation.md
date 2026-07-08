@@ -1,7 +1,7 @@
 # Local Validation Setup
 
 > **Audience:** Projects bootstrapping from skill templates (`gh skill`, `npx skills`). For this repository's dev workflow, read [`development-setup.md`](./development-setup.md).
-> **When to read:** Bootstrapping local `pyproject.toml`, `.gitignore`, mypy/Pydantic plugin settings, Ruff, pytest, or skill-package validation.
+> **When to read:** Bootstrapping local `pyproject.toml`, `.gitignore`, pyrefly/Pydantic settings, Ruff, pytest, or skill-package validation.
 > **Related:** [`quality-gates.md`](./quality-gates.md) (canonical check commands), [`ci-setup.md`](./ci-setup.md).
 
 
@@ -39,7 +39,7 @@ Recommended local files:
 - [`../assets/templates/gitignore`](../assets/templates/gitignore) -> `.gitignore` or merge into the existing file.
 - [`../assets/templates/validate_package.py`](../assets/templates/validate_package.py) -> `scripts/validate_package.py` for skill/plugin repositories only.
 
-Adjust `project.name`, `description`, and `[tool.mypy].files` before committing. For application repositories, `[tool.mypy].files` usually points at `src` and `tests`; for skill repositories, include `scripts`, examples, and tests.
+Adjust `project.name`, `description`, and `[tool.pyrefly].project-includes` before committing. For application repositories, `project-includes` usually points at `src` and `tests`; for skill repositories, include `scripts`, examples, and tests.
 
 ## First-Time Setup
 
@@ -94,7 +94,7 @@ Use `.env` with pydantic-settings (see [`boundary-defense.md`](./boundary-defens
 ```bash
 uv run ruff format --check .
 uv run ruff check .
-uv run mypy .
+uv run pyrefly check .
 uv run pytest
 python path/to/kamae-py/scripts/check_kamae_policy.py --target . --include-tests
 ```
@@ -103,7 +103,7 @@ python path/to/kamae-py/scripts/check_kamae_policy.py --target . --include-tests
 
 - Enable Ruff as the format/lint provider in the IDE.
 - Set the interpreter to `.venv/bin/python` after `uv sync`.
-- Run `uv run mypy` from the project root so the Pydantic mypy plugin resolves.
+- Run `uv run pyrefly check` from the project root so built-in Pydantic support resolves.
 
 ## Local Check Loop
 
@@ -111,7 +111,7 @@ After bootstrap, run the baseline commands in [`quality-gates.md`](./quality-gat
 
 Install pre-commit hooks from [`quality-gates.md`](./quality-gates.md#pre-commit-integration) when the team wants automatic formatting before commit.
 
-For mypy and Pydantic plugin settings, merge [`../assets/templates/pyproject.toml`](../assets/templates/pyproject.toml) or follow [`domain-modeling.md`](./domain-modeling.md#configure-mypy-with-the-pydantic-plugin).
+For pyrefly and Pydantic settings, merge [`../assets/templates/pyproject.toml`](../assets/templates/pyproject.toml) or follow [`domain-modeling.md`](./domain-modeling.md#configure-pyrefly-for-pydantic-models).
 
 ## When to Add Docker
 

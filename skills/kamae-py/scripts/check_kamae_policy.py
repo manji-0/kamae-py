@@ -129,16 +129,16 @@ def check_project_config(result: PolicyResult, config: dict[str, Any]) -> None:
             "project.dependencies must include 'pydantic>=2,<3'",
         )
 
-    mypy = config.get("tool", {}).get("mypy", {})
-    if not mypy.get("strict"):
-        result.add(pyproject_path(), 0, "[tool.mypy] strict must be true")
-    if "pydantic.mypy" not in mypy.get("plugins", []):
-        result.add(pyproject_path(), 0, "[tool.mypy] plugins must include 'pydantic.mypy'")
+    dev_deps = config.get("dependency-groups", {}).get("dev", [])
+    pyrefly_re = re.compile(r"^pyrefly(?:\[[^\]]+\])?\s*>=")
+    if not any(pyrefly_re.search(dep) for dep in dev_deps):
+        result.add(pyproject_path(), 0, "dependency-groups.dev must include 'pyrefly>=...'")
 
-    pydantic_mypy = config.get("tool", {}).get("pydantic-mypy", {})
-    for flag in ("init_forbid_extra", "init_typed", "warn_required_dynamic_aliases"):
-        if not pydantic_mypy.get(flag):
-            result.add(pyproject_path(), 0, f"[tool.pydantic-mypy] {flag} must be true")
+    pyrefly = config.get("tool", {}).get("pyrefly", {})
+    if not pyrefly.get("project-includes"):
+        result.add(pyproject_path(), 0, "[tool.pyrefly] project-includes must be set")
+    if not pyrefly.get("python-version"):
+        result.add(pyproject_path(), 0, "[tool.pyrefly] python-version must be set")
 
     ruff = config.get("tool", {}).get("ruff", {})
     if ruff.get("target-version") != "py312":
