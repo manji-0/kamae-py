@@ -39,4 +39,3 @@ project-includes = [
 ]
 project-excludes = ["**/skills/kamae-py/assets/templates/"]
 python-version = "3.12.0"
-preset = "legacy"
