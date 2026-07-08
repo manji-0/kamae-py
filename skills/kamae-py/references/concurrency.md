@@ -1,7 +1,7 @@
 # Concurrency, the GIL, and Async Boundaries
 
 > **When to read:** CPU-bound domain work, the GIL, `ProcessPoolExecutor`, or blocking the asyncio event loop is a concern.
-> **Related:** [`application-wiring.md`](./application-wiring.md), [`state-transitions.md`](./state-transitions.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md).
+> **Related:** [`application-wiring.md`](./application-wiring.md), [`state-transitions.md`](./state-transitions.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md), [`python-performance.md`](./python-performance.md).
 
 
 Kamae Python assumes **asyncio** for I/O-bound application code: HTTP handlers, repository adapters, queue consumers. Pure domain transitions stay **synchronous**. This split keeps business rules easy to test without an event loop.

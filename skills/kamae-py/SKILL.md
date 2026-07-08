@@ -9,8 +9,8 @@ description: |
 
   Use when writing or reviewing Python backend domain models, use cases, state
   transitions, repository protocols, API/DB/message boundary parsing, PII handling,
-  outbox/event workflows, logging, metrics, tests, or Pydantic v2 unions for business
-  workflows. Skip for frontend code, scripts unrelated to domain logic, infrastructure-only
+  outbox/event workflows, logging, metrics, tests, performance-sensitive hot paths,
+  or Pydantic v2 unions for business workflows. Skip for frontend code, scripts unrelated to domain logic, infrastructure-only
   work, or Pydantic v1 projects unless migrating to v2.
 ---
 
@@ -83,6 +83,8 @@ Avoid copying full snippets into new references. Link to these **canonical** def
 | End-to-end code | [`taxi-request.py`](./references/taxi-request.py) |
 | Pyrefly / Pydantic config | [`domain-modeling.md`](./references/domain-modeling.md#configure-pyrefly-for-pydantic-models) |
 | Quality gate commands | [`quality-gates.md`](./references/quality-gates.md#baseline-commands) |
+| Python hot-path style | [`python-performance.md`](./references/python-performance.md) |
+| Pydantic validation cost | [`pydantic-performance.md`](./references/pydantic-performance.md) |
 
 ## Principles
 
@@ -95,6 +97,8 @@ Default to frozen Pydantic v2 state variants with a literal `kind` field and an 
 For lightweight in-process value objects, read the Pydantic vs `dataclasses` / attrs selection table. For nominal ID wrappers and `__init_subclass__` patterns, read the strengthened value-type section in the same file. Keep decorators from hiding I/O, caching, or validation that pure transitions should receive as explicit arguments.
 
 Read [`references/pydantic-performance.md`](./references/pydantic-performance.md) when validation overhead matters on large models, high-frequency endpoints, `model_construct` tradeoffs, or msgspec-style boundary serializers.
+
+Read [`references/python-performance.md`](./references/python-performance.md) when loop structure, data-structure choice, batching, repository access patterns, or general Python write style affects hot-path efficiency.
 
 ### State Transitions
 
@@ -145,6 +149,8 @@ Read [`references/application-wiring.md`](./references/application-wiring.md) wh
 Prefer explicit function parameters and `typing.Protocol` ports. Wire dependencies only at the composition root.
 
 Read [`references/concurrency.md`](./references/concurrency.md) when CPU-bound domain work, the GIL, `ProcessPoolExecutor`, or blocking the asyncio event loop is a concern.
+
+Pair with [`references/python-performance.md`](./references/python-performance.md) when profiling shows Python loop or allocation cost before reaching for process pools.
 
 ### Infrastructure Resilience
 

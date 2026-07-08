@@ -73,6 +73,7 @@ links to its topic guide under `../kamae-py/references/`.
 | 18 | `pydantic-performance.md` | `pydantic-performance.md` |
 | 19 | `migration-strategy.md` | `migration-strategy.md` |
 | 20 | `tests.md` | `test-data.md` |
+| 21 | `python-performance.md` | `python-performance.md` |
 
 ## Review Probe
 
@@ -101,6 +102,7 @@ Use probe output only to choose what to inspect. Do not report a finding until y
 | CPU-bound work, GIL, `ProcessPoolExecutor`, blocking the asyncio event loop | `concurrency.md`, `application-wiring.md`, `tests.md` |
 | Tenacity retries, circuit breakers, client timeouts around external APIs/DB/queues | `infrastructure-resilience.md`, `persistence-events.md`, `tests.md` |
 | `model_construct`, validation overhead, msgspec boundary serializers | `pydantic-performance.md`, `boundary.md`, `tests.md` |
+| Nested loops, batch/list processing, N+1 queries, `deepcopy`, hot-path string building | `python-performance.md`, `persistence-events.md`, `orm-adapters.md`, `tests.md` |
 | Legacy service classes, gradual migration, compatibility shims | `migration-strategy.md`, `boundary.md`, `tests.md` |
 | `hypothesis`, property tests, fixtures, factories, transition tables | `tests.md`, nearby domain checklist |
 | Test-only helpers, builders, fixtures, redaction assertions | `tests.md` |
@@ -127,6 +129,7 @@ Use nearby checklists when a diff crosses concerns. Do not load unrelated files 
 - [`checklist/infrastructure-resilience.md`](./checklist/infrastructure-resilience.md)
 - [`checklist/orm-adapters.md`](./checklist/orm-adapters.md)
 - [`checklist/pydantic-performance.md`](./checklist/pydantic-performance.md)
+- [`checklist/python-performance.md`](./checklist/python-performance.md)
 - [`checklist/migration-strategy.md`](./checklist/migration-strategy.md)
 - [`checklist/tests.md`](./checklist/tests.md)
 

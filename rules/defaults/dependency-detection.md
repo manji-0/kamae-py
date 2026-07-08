@@ -19,6 +19,8 @@ Guide-backed detections:
 - `tenacity` -> `references/infrastructure-resilience.md`
 - `opentelemetry-api` or `opentelemetry-sdk` -> `references/logging-metrics.md`
 - `msgspec` -> `references/pydantic-performance.md`
+- `orjson` -> `references/python-performance.md`, `references/pydantic-performance.md`
+- `numpy` or `pandas` -> `references/python-performance.md`, `references/concurrency.md`
 
 Detection-only dependencies:
 

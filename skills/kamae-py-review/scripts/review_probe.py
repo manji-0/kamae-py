@@ -36,6 +36,7 @@ CHECKLISTS = (
     "infrastructure-resilience",
     "orm-adapters",
     "pydantic-performance",
+    "python-performance",
     "migration-strategy",
     "tests",
 )
@@ -102,6 +103,26 @@ PATTERN_RULES: list[tuple[str, re.Pattern[str], tuple[str, ...]]] = [
         "property-tests",
         re.compile(r"\b(hypothesis|given\(|@settings)\b"),
         ("tests",),
+    ),
+    (
+        "performance-copy",
+        re.compile(r"\b(deepcopy|copy\.deepcopy)\b"),
+        ("python-performance",),
+    ),
+    (
+        "performance-json-parse",
+        re.compile(r"\bjson\.loads\("),
+        ("python-performance", "pydantic-performance"),
+    ),
+    (
+        "performance-string-concat",
+        re.compile(r"\+\=\s*['\"]"),
+        ("python-performance",),
+    ),
+    (
+        "performance-batch",
+        re.compile(r"\b(batched\(|executemany|batch_size|chunk_size)\b", re.I),
+        ("python-performance", "persistence-events"),
     ),
     (
         "doc-contract-gap",

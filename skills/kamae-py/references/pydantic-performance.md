@@ -1,7 +1,7 @@
 # Pydantic Performance and Validation Cost
 
 > **When to read:** Validation overhead matters on large models, high-frequency endpoints, `model_construct` tradeoffs, or msgspec-style boundary serializers.
-> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`boundary-defense.md`](./boundary-defense.md), [`unsafe-boundaries.md`](./unsafe-boundaries.md).
+> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`boundary-defense.md`](./boundary-defense.md), [`unsafe-boundaries.md`](./unsafe-boundaries.md), [`python-performance.md`](./python-performance.md).
 
 
 Kamae Python keeps Pydantic v2 as the default for domain states and boundary parsing. Validation has a real cost on large models, nested unions, and high-frequency endpoints. Treat performance as a boundary and hot-path concern—not a reason to weaken domain invariants.
