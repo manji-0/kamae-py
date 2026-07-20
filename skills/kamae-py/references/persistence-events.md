@@ -1,7 +1,7 @@
 # Persistence and Events
 
 > **When to read:** Designing repositories, transactions, outbox records, idempotent commands, optimistic locking, or event payloads.
-> **Related:** [`aggregates.md`](./aggregates.md), [`orm-adapters.md`](./orm-adapters.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md), [`boundary-defense.md`](./boundary-defense.md).
+> **Related:** [`aggregates.md`](./aggregates.md), [`orm-adapters.md`](./orm-adapters.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md), [`boundary-defense.md`](./boundary-defense.md), [`service-boundaries.md`](./service-boundaries.md), [`stream-continuous-queries.md`](./stream-continuous-queries.md).
 
 
 Read [`aggregates.md`](./aggregates.md) for aggregate roots, one-command consistency boundaries, and who owns transactions.

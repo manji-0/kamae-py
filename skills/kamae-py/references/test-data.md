@@ -1,7 +1,7 @@
 # Test Data
 
 > **When to read:** Adding fixtures, factories, property-based tests, transition tests, boundary tests, or persistence retry tests.
-> **Related:** [`state-transitions.md`](./state-transitions.md), [`loggable-identifiers.md`](./loggable-identifiers.md), [`logging-metrics.md`](./logging-metrics.md).
+> **Related:** [`state-transitions.md`](./state-transitions.md), [`loggable-identifiers.md`](./loggable-identifiers.md), [`logging-metrics.md`](./logging-metrics.md), [`library-guides/hypothesis.md`](./library-guides/hypothesis.md).
 
 
 ## Build Fixtures Through Public Paths

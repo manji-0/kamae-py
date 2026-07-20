@@ -1,7 +1,7 @@
 # Application Wiring and Ports
 
 > **When to read:** Wiring use cases to repository ports, framework entrypoints, fakes, or deciding between explicit arguments and DI containers.
-> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`concurrency.md`](./concurrency.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md).
+> **Related:** [`domain-modeling.md`](./domain-modeling.md), [`concurrency.md`](./concurrency.md), [`infrastructure-resilience.md`](./infrastructure-resilience.md), [`library-guides/fastapi.md`](./library-guides/fastapi.md), [`stream-continuous-queries.md`](./stream-continuous-queries.md).
 
 
 ## Default Stance: Explicit Arguments, Not a DI Container

@@ -7,9 +7,10 @@ description: |
   consistency, logging and metrics, docstring API contracts, and uv-backed quality
   gates. Use when reviewing Python pull requests, diffs, audits, or quality checks
   involving domain models, use cases, repository protocols, DTO conversion, ORM
-  adapters, native/ctypes boundaries, Hypothesis tests, or business logic. Skip
-  frontend assets, scripts unrelated to domain behavior, pure infrastructure, and
-  Pydantic v1 projects unless the diff is migrating to v2.
+  adapters, service/queue boundaries, stream/projection consumers, native/ctypes
+  boundaries, Hypothesis tests, or business logic. Skip frontend assets, scripts
+  unrelated to domain behavior, pure infrastructure, and Pydantic v1 projects
+  unless the diff is migrating to v2.
 ---
 
 # Kamae Python Review
@@ -74,10 +75,12 @@ links to its topic guide under `../kamae-py/references/`.
 | 19 | `migration-strategy.md` | `migration-strategy.md` |
 | 20 | `tests.md` | `test-data.md` |
 | 21 | `python-performance.md` | `python-performance.md` |
+| 22 | `service-boundaries.md` | `service-boundaries.md` |
+| 23 | `stream-continuous-queries.md` | `stream-continuous-queries.md` |
 
 ## Review Probe
 
-The optional probe at [`./scripts/review_probe.py`](./scripts/review_probe.py) scans Python files for patterns that commonly route to Kamae checklists: native/unchecked boundaries, lint suppressions, implicit time/randomness, Pydantic bypasses, PII terms, persistence/event code, asyncio operational risks, and docstring contract gaps.
+The optional probe at [`./scripts/review_probe.py`](./scripts/review_probe.py) scans Python files for patterns that commonly route to Kamae checklists: native/unchecked boundaries, lint suppressions, implicit time/randomness, Pydantic bypasses, PII terms, persistence/event code, service/queue boundaries, stream/projection consumers, asyncio operational risks, and docstring contract gaps.
 
 Use probe output only to choose what to inspect. Do not report a finding until you have read the relevant code and confirmed a reachable invariant break, leak, unsoundness risk, or project-policy violation.
 
@@ -104,6 +107,8 @@ Use probe output only to choose what to inspect. Do not report a finding until y
 | `model_construct`, validation overhead, msgspec boundary serializers | `pydantic-performance.md`, `boundary.md`, `tests.md` |
 | Nested loops, batch/list processing, N+1 queries, `deepcopy`, hot-path string building | `python-performance.md`, `persistence-events.md`, `orm-adapters.md`, `tests.md` |
 | Legacy service classes, gradual migration, compatibility shims | `migration-strategy.md`, `boundary.md`, `tests.md` |
+| gRPC/protobuf/OpenAPI clients, cross-service HTTP, queue message schemas, `schema_version` | `service-boundaries.md`, `boundary.md`, `persistence-events.md`, `tests.md` |
+| Outbox pollers, projections, `AsyncIterator` event feeds, Celery/ARQ/Kafka/Redis Streams consumers | `stream-continuous-queries.md`, `persistence-events.md`, `service-boundaries.md`, `tests.md` |
 | `hypothesis`, property tests, fixtures, factories, transition tables | `tests.md`, nearby domain checklist |
 | Test-only helpers, builders, fixtures, redaction assertions | `tests.md` |
 
@@ -131,6 +136,8 @@ Use nearby checklists when a diff crosses concerns. Do not load unrelated files 
 - [`checklist/pydantic-performance.md`](./checklist/pydantic-performance.md)
 - [`checklist/python-performance.md`](./checklist/python-performance.md)
 - [`checklist/migration-strategy.md`](./checklist/migration-strategy.md)
+- [`checklist/service-boundaries.md`](./checklist/service-boundaries.md)
+- [`checklist/stream-continuous-queries.md`](./checklist/stream-continuous-queries.md)
 - [`checklist/tests.md`](./checklist/tests.md)
 
 ## Severity Classes

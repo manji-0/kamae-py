@@ -9,9 +9,10 @@ description: |
 
   Use when writing or reviewing Python backend domain models, use cases, state
   transitions, repository protocols, API/DB/message boundary parsing, PII handling,
-  outbox/event workflows, logging, metrics, tests, performance-sensitive hot paths,
-  or Pydantic v2 unions for business workflows. Skip for frontend code, scripts unrelated to domain logic, infrastructure-only
-  work, or Pydantic v1 projects unless migrating to v2.
+  outbox/event workflows, cross-service boundaries, stream/projection consumers,
+  logging, metrics, tests, performance-sensitive hot paths, or Pydantic v2 unions
+  for business workflows. Skip for frontend code, scripts unrelated to domain
+  logic, infrastructure-only work, or Pydantic v1 projects unless migrating to v2.
 ---
 
 # Kamae Python
@@ -41,7 +42,8 @@ For each rule:
 5. If `pydantic` is absent or version 1.x, ask before migrating existing code. For new code, add Pydantic v2 through uv.
 6. Use Python 3.12+ syntax directly: `A | B`, `match`, `typing.assert_never` (3.11+), `typing.Self` (3.11+), and modern standard-library typing.
 7. Keep generated code consistent with existing module layout, naming, and dependency choices unless they conflict with the principles below.
-8. Read only the reference files needed for the current task.
+8. When a dependency is present and relevant, load the matching file under [`references/library-guides/`](./references/library-guides/) for library-specific defaults. Prefer the matching topic guide under `references/` for full patterns. Current guides: [`pydantic.md`](./references/library-guides/pydantic.md), [`fastapi.md`](./references/library-guides/fastapi.md), [`sqlalchemy.md`](./references/library-guides/sqlalchemy.md), [`hypothesis.md`](./references/library-guides/hypothesis.md).
+9. Read only the reference files needed for the current task.
 
 ## Reading Paths
 
@@ -85,6 +87,9 @@ Avoid copying full snippets into new references. Link to these **canonical** def
 | Quality gate commands | [`quality-gates.md`](./references/quality-gates.md#baseline-commands) |
 | Python hot-path style | [`python-performance.md`](./references/python-performance.md) |
 | Pydantic validation cost | [`pydantic-performance.md`](./references/pydantic-performance.md) |
+| Cross-service contracts | [`service-boundaries.md`](./references/service-boundaries.md) |
+| Projections / outbox feeds | [`stream-continuous-queries.md`](./references/stream-continuous-queries.md) |
+| Library defaults (Pydantic/FastAPI/…) | [`library-guides/`](./references/library-guides/) |
 
 ## Principles
 
@@ -157,6 +162,18 @@ Pair with [`references/python-performance.md`](./references/python-performance.m
 Read [`references/infrastructure-resilience.md`](./references/infrastructure-resilience.md) when adding retry, timeout, or circuit-breaker behavior around external API, database, or queue adapters.
 
 Keep tenacity, circuit breakers, and client timeouts in infrastructure modules. Pair retries with idempotency keys from [`references/persistence-events.md`](./references/persistence-events.md).
+
+### Service Boundaries
+
+Read [`references/service-boundaries.md`](./references/service-boundaries.md) when integrating other HTTP/gRPC services, queue consumers, protobuf/JSON contracts, schema evolution, or cross-service correlation.
+
+Treat remote APIs like any other external boundary: parse DTOs at the adapter edge, keep generated clients out of domain packages, and keep retries/breakers in infrastructure.
+
+### Streams and Continuous Queries
+
+Read [`references/stream-continuous-queries.md`](./references/stream-continuous-queries.md) when modeling outbox relays, event subscriptions, CQRS projections, worker loops, or continuous change feeds.
+
+Prefer typed `AsyncIterator` ports with durable cursors. Keep projections idempotent and out of the write-model command path.
 
 ### Migration Strategy
 

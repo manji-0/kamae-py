@@ -1,6 +1,6 @@
 {
   "name": "kamae-py",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Kamae Python - server-side Python 3.12+ domain modeling and review with rules-based customization",
   "author": {
     "name": "kamae-py contributors"

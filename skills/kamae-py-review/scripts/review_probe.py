@@ -38,6 +38,8 @@ CHECKLISTS = (
     "pydantic-performance",
     "python-performance",
     "migration-strategy",
+    "service-boundaries",
+    "stream-continuous-queries",
     "tests",
 )
 
@@ -66,6 +68,22 @@ PATTERN_RULES: list[tuple[str, re.Pattern[str], tuple[str, ...]]] = [
         "persistence-events",
         re.compile(r"\b(outbox|repository|transaction|idempoten|optimistic|event_version)\b", re.I),
         ("persistence-events", "aggregates", "tests"),
+    ),
+    (
+        "service-boundaries",
+        re.compile(
+            r"\b(grpc|protobuf|httpx|aiohttp|celery|kombu|aiokafka|schema_version|correlation_id)\b",
+            re.I,
+        ),
+        ("service-boundaries", "boundary", "persistence-events"),
+    ),
+    (
+        "stream-continuous-queries",
+        re.compile(
+            r"\b(AsyncIterator|async for |projection|checkpoint|SKIP LOCKED|outbox|subscribe)\b",
+            re.I,
+        ),
+        ("stream-continuous-queries", "persistence-events", "service-boundaries"),
     ),
     (
         "orm-imports",

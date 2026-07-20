@@ -28,7 +28,7 @@ JSON_MANIFESTS = [
 FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
 MD_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 FENCED_CODE_RE = re.compile(r"```.*?```", re.DOTALL)
-REFERENCE_GUIDE_RE = re.compile(r"references/[A-Za-z0-9_-]+\.md")
+REFERENCE_GUIDE_RE = re.compile(r"references/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.md")
 
 RULES_DEFAULTS = ROOT / "rules" / "defaults"
 SKILL_ROOT = SKILLS_ROOT / "kamae-py"
